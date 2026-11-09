@@ -1,0 +1,118 @@
+:root {
+  --texion-border: #cbd5e1;
+  --texion-background: #fff;
+  --texion-foreground: #172033;
+  --texion-accent: #2563eb;
+  --texion-radius: 0.5rem;
+}
+.texion-input {
+  color: var(--texion-foreground);
+  background: var(--texion-background);
+  border: 1px solid var(--texion-border);
+  border-radius: var(--texion-radius);
+  padding: 1rem;
+}
+.texion-input textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 7rem;
+  font: inherit;
+  margin-block: 0.5rem;
+}
+.texion-input[data-dragging] {
+  outline: 2px solid var(--texion-accent);
+}
+.texion-input button {
+  margin: 0.25rem;
+}
+.texion-input :focus-visible {
+  outline: 2px solid var(--texion-accent);
+  outline-offset: 2px;
+}
+.texion-attachments {
+  padding-inline-start: 1.25rem;
+}
+.texion-viewer {
+  overflow-wrap: anywhere;
+}
+.texion-viewer pre,
+.texion-viewer table {
+  display: block;
+  overflow-x: auto;
+}
+
+/* Token colors never change glyph metrics. Layout is mirrored from the native textarea. */
+.texion-highlight-overlay span {
+  font: inherit;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+}
+@media (forced-colors: active) {
+  .texion-highlighted-textarea textarea {
+    -webkit-text-fill-color: currentColor !important;
+  }
+  .texion-highlight-overlay {
+    display: none;
+  }
+}
+
+.texion-rich-editor {
+  position: relative;
+}
+.texion-rich-content {
+  min-height: 7rem;
+  padding: 0.75rem;
+  border: 1px solid var(--texion-border);
+  border-radius: var(--texion-radius);
+  outline-offset: 2px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.texion-rich-placeholder {
+  position: absolute;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.texion-rich-content p {
+  margin-block: 0.5rem;
+}
+.texion-rich-content h1 {
+  font-size: 1.75em;
+}
+.texion-rich-content h2 {
+  font-size: 1.5em;
+}
+.texion-rich-content h3 {
+  font-size: 1.25em;
+}
+.texion-rich-content blockquote {
+  border-inline-start: 3px solid var(--texion-border);
+  margin-inline-start: 0;
+  padding-inline-start: 1rem;
+}
+.texion-rich-bold {
+  font-weight: bold;
+}
+.texion-rich-italic {
+  font-style: italic;
+}
+.texion-rich-strikethrough {
+  text-decoration: line-through;
+}
+.texion-rich-inline-code,
+.texion-rich-code {
+  font-family: monospace;
+}
+.texion-rich-code {
+  display: block;
+  padding: 0.5rem;
+  background: color-mix(
+    in srgb,
+    var(--texion-foreground) 6%,
+    var(--texion-background)
+  );
+  overflow-x: auto;
+}

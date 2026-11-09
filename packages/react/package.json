@@ -1,0 +1,50 @@
+{
+  "name": "@texion/react",
+  "version": "0.1.0",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lexical/code": "^0.53.0",
+    "@lexical/history": "^0.53.0",
+    "@lexical/link": "^0.53.0",
+    "@lexical/list": "^0.53.0",
+    "@lexical/markdown": "^0.53.0",
+    "@lexical/react": "^0.53.0",
+    "@lexical/rich-text": "^0.53.0",
+    "@lexical/utils": "^0.53.0",
+    "@texion/core": "workspace:*",
+    "lexical": "^0.53.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

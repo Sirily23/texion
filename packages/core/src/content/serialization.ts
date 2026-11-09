@@ -1,0 +1,30 @@
+import { createContent, isTexionContent } from './schema';
+import type { TexionContent } from './types';
+
+export function serializeContent(content: TexionContent): string {
+  if (!isTexionContent(content)) {
+    throw new TypeError('Unsupported Texion content.');
+  }
+  return JSON.stringify(content);
+}
+
+export function deserializeContent(serialized: string): TexionContent {
+  const value: unknown = JSON.parse(serialized);
+
+  if (!isTexionContent(value)) {
+    throw new TypeError('Unsupported Texion content.');
+  }
+  return createContent(
+    value.source,
+    value.originalSource === undefined
+      ? {}
+      : { originalSource: value.originalSource },
+  );
+}
+
+export function exportMarkdown(content: TexionContent): string {
+  if (!isTexionContent(content)) {
+    throw new TypeError('Unsupported Texion content.');
+  }
+  return content.source;
+}

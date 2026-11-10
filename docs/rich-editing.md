@@ -41,7 +41,7 @@ Submission provides `{ content, attachments }`. `text`, `documents`, and `textDo
 
 ## Scope and limits
 
-Only Markdown is implemented. JSON, SQL, images, and additional format adapters remain future work; code can be preserved inside Markdown fences without reformatting its contents. Clipboard HTML is ignored, remote images are not loaded, and core URL restrictions apply to editor links as well as previews.
+Rich formatting uses Markdown. JSON and CSV have separate source editors and structured viewers, and raster images are attachments. Enabled JSON/CSV pastes switch an empty rich input to source editing or enter an existing draft as literal code blocks. SQL has no dedicated adapter; its source can be preserved inside Markdown fences. Clipboard HTML is ignored, remote images are not loaded, and core URL restrictions apply to editor links as well as previews.
 
 The first rich converter handles a bounded subset of Markdown. Front matter, tables, task lists, reference links, and footnotes require source mode to avoid flattening their structure. Pasting these into an empty rich editor switches to source mode and preserves the full paste. When inserting them into an existing rich draft, Texion explains that they must be pasted in source mode. Unsupported initial content offers an Edit source action.
 

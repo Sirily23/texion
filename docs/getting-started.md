@@ -1,6 +1,6 @@
 # Getting started
 
-Texion has two packages: `@texion/core` and `@texion/react`. Markdown is the only built-in format in this release.
+Texion has two packages: `@texion/core` and `@texion/react`. Markdown, JSON, CSV and local PNG/JPEG/GIF/WebP images have built-in adapters.
 
 ```tsx
 import { TexionInput } from '@texion/react';
@@ -49,8 +49,10 @@ Inline editing is independent from ingestion. Text is processed when submitting 
 
 `useDocument(input)` and `<DocumentViewer input={fileOrText} />` use that same controller. To reuse an existing attachment without reprocessing, pass `<DocumentViewer document={document} />`. The default renderer loads lazily. For an explicit renderer import `MarkdownRenderer` from `@texion/react/markdown` and pass it as `renderer`.
 
-Limits default to 5 attachments, 2,000,000 bytes per document, 50,000 preview characters, 5,000 preview nodes, and depth 64. Limits must be positive safe integers. Preview truncation preserves the complete `raw` source. UTF-8 and BOM-marked UTF-16 are supported; invalid encoding bytes are replaced with a warning. Newlines and front matter remain in `raw`; `metadata.frontMatter` contains unparsed front matter. File extensions take precedence over MIME and content detection. `.txt`, JSON, PDF, images, and other unsupported file types are rejected.
+Limits default to 5 attachments, 2,000,000 bytes per document, 50,000 preview characters, 5,000 preview nodes, and depth 64. Limits must be positive safe integers. Preview truncation preserves the complete `raw` source. UTF-8 and BOM-marked UTF-16 are supported; invalid encoding bytes are replaced with a warning. Newlines and front matter remain in `raw`; `metadata.frontMatter` contains unparsed front matter. File extensions take precedence over MIME and content detection. `.txt`, SVG, PDF, DOCX and other unregistered file types are rejected. JSON, CSV and supported raster images use their own adapters.
 
 From this repository, use Node 20.19 or newer, run `pnpm install`, then `pnpm build`, `pnpm typecheck`, and `pnpm test`. `pnpm dev` opens the composer example. Browser tests require `pnpm exec playwright install chromium --no-shell` followed by `pnpm test:browser`.
 
 See [rich editing and shared content](rich-editing.md) for `mode="rich"`, `TexionViewer`, and `{ content, attachments }` submission. See [native source editing](source-editing.md) for `HighlightedTextarea`, `useMarkdownInput`, and live syntax ranges.
+
+See [supported formats](formats.md) for JSON/CSV source editing, automatic recognition, image attachments, renderer selection and `maxImagePixels`.

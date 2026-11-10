@@ -24,3 +24,5 @@ Text paste follows the browser's native editing path, preserving cursor placemen
 The overlay is hidden from assistive technology and cannot receive pointer or keyboard input. It mirrors font metrics, padding, borders, wrapping, tabs, direction, scroll offsets, scrollbar space, resizing, and font changes. Token styles change color only. The native textarea remains mounted while highlighting pauses or resumes. Composition, forced-colors mode, inputs over `maxHighlightCharacters` (20,000 by default), and complexity limits fall back to plain editing.
 
 Import `@texion/react/styles.css` for default styles. Standalone highlighting also has inline color fallbacks. Override the `--texion-highlight-*` CSS variables for your theme; do not apply different fonts, font weights, spacing, or padding to token spans because those change alignment.
+
+For JSON and CSV, use `useSourceInput` or pass `language="json"` / `language="csv"` to `HighlightedTextarea`. `useMarkdownInput` stays specific to Markdown. [Format support](formats.md) describes automatic recognition and live diagnostics.

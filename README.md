@@ -4,7 +4,7 @@
 
 This is a library that makes it easier to type, attach, parse, preview, and safely render Markdown and other text-based formats
 
-## Markdown editing and rendering
+## Format-aware editing and rendering
 
 `@texion/core` owns decoding, validation, document state, cancellation and lazy safe previews. `@texion/react` provides `useTexion`, `TexionInput`, `useDocument`, `AttachmentList` and `DocumentViewer` on that same lifecycle.
 
@@ -24,3 +24,5 @@ Use `pnpm format` to format the workspace and `pnpm format:check` to verify it.
 Use `<TexionInput mode="rich" live formats={['markdown']} />` for editable Markdown conversion, or `<TexionInput highlight />` for native source editing. Submit `{ content, attachments }` and render saved content with `<TexionViewer content={content} />`.
 
 See [rich editing](docs/rich-editing.md) and [source editing](docs/source-editing.md) for supported syntax, preservation rules, and headless APIs.
+
+JSON, CSV and local raster images now share the document lifecycle. Use `format="json"`, `format="csv"` or automatic source recognition. Enable image attachments with `formats={['markdown', 'json', 'csv', 'image']}`. See [supported formats](docs/formats.md) for source preservation, structured previews, validation warnings and image limits.

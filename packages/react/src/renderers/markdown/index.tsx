@@ -1,3 +1,4 @@
+import type { PreviewRendererProps } from '../types';
 import { Fragment, createElement } from 'react';
 import type { ReactNode } from 'react';
 import { safeUrl } from '@texion/core';
@@ -100,11 +101,7 @@ function render(node: PreviewNode, index: number): ReactNode {
   }
 }
 
-export function MarkdownRenderer({
-  preview,
-}: {
-  readonly preview: DocumentPreview;
-}) {
+export function MarkdownRenderer({ preview }: PreviewRendererProps) {
   return <>{preview.nodes.map(render)}</>;
 }
 

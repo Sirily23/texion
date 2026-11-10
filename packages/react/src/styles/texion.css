@@ -116,3 +116,51 @@
   );
   overflow-x: auto;
 }
+
+.texion-json-branch {
+  margin-block: 0.35rem;
+}
+.texion-json-branch summary {
+  cursor: pointer;
+}
+.texion-json-branch dl {
+  margin-inline-start: 1rem;
+}
+.texion-json-branch dt {
+  font-weight: 600;
+}
+.texion-json-branch dd {
+  margin-inline-start: 1rem;
+  overflow-wrap: anywhere;
+}
+.texion-csv-viewer {
+  overflow: auto;
+  max-height: 30rem;
+}
+.texion-csv-viewer table {
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+}
+.texion-csv-viewer th,
+.texion-csv-viewer td {
+  border: 1px solid var(--texion-border);
+  padding: 0.4rem 0.65rem;
+  text-align: start;
+  vertical-align: top;
+  white-space: pre-wrap;
+}
+.texion-image-viewer {
+  margin: 0;
+}
+.texion-image-viewer img {
+  display: block;
+  max-width: 100%;
+  max-height: 30rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.texion-image-viewer figcaption {
+  margin-block-start: 0.5rem;
+}

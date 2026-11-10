@@ -12,6 +12,8 @@ export interface TexionInputProps extends UseTexionOptions {
   readonly placeholder?: string;
   readonly label?: string;
   readonly preview?: boolean;
+  /** Show local image previews automatically as attachments become ready. */
+  readonly previewImages?: boolean;
   readonly className?: string;
   readonly mode?: 'source' | 'rich';
   readonly live?: boolean;
@@ -24,6 +26,7 @@ export function TexionInput({
   placeholder = 'Write something…',
   label = 'Message',
   preview = false,
+  previewImages = false,
   className = 'texion-input',
   mode = 'source',
   live = true,
@@ -43,6 +46,11 @@ export function TexionInput({
   const id = useId();
   const [previewId, setPreviewId] = useState<string>();
   const [showTextPreview, setShowTextPreview] = useState(false);
+  const [showImagePreviews, setShowImagePreviews] = useState(previewImages);
+  useEffect(() => setShowImagePreviews(previewImages), [previewImages]);
+  const images = texion.documents.filter(
+    (document) => document.format === 'image' && document.status === 'ready',
+  );
   const selected = texion.documents.find(
     (document) => document.id === previewId,
   );
@@ -122,19 +130,38 @@ export function TexionInput({
       )}
       {texion.isDragging && <p role="status">Drop supported files here</p>}
       {texion.inputError && <p role="alert">{texion.inputError}</p>}
+      {images.length > 0 && (
+        <label>
+          <input
+            type="checkbox"
+            checked={showImagePreviews}
+            onChange={(event) => {
+              setShowImagePreviews(event.currentTarget.checked);
+              setPreviewId(undefined);
+            }}
+          />
+          Show image previews
+        </label>
+      )}
       <AttachmentList
         documents={texion.documents}
         onRemove={texion.removeDocument}
         onPreview={preview ? setPreviewId : undefined}
       />
-      {preview && selected && (
-        <>
-          <button type="button" onClick={() => setPreviewId(undefined)}>
-            Close preview
-          </button>
-          <DocumentViewer document={selected} />
-        </>
-      )}
+      {showImagePreviews &&
+        images.map((document) => (
+          <DocumentViewer key={document.id} document={document} />
+        ))}
+      {preview &&
+        selected &&
+        !(showImagePreviews && selected.format === 'image') && (
+          <>
+            <button type="button" onClick={() => setPreviewId(undefined)}>
+              Close preview
+            </button>
+            <DocumentViewer document={selected} />
+          </>
+        )}
       {texion.submitError && <p role="alert">{texion.submitError}</p>}
       <button
         type="button"

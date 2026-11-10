@@ -4,6 +4,59 @@ import { expect, test } from '@playwright/test';
 const fixture = (extension: string) =>
   readFileSync(new URL(`../fixtures/raster.${extension}`, import.meta.url));
 
+test('toggles live previews for attached and pasted images without removing them', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByLabel('Choose files', { exact: true }).setInputFiles({
+    name: 'attached.png',
+    mimeType: 'image/png',
+    buffer: fixture('png'),
+  });
+  const toggle = page.getByRole('checkbox', {
+    name: 'Show image previews',
+    exact: true,
+  });
+  await expect(toggle).not.toBeChecked();
+  await expect(
+    page.getByRole('img', { name: 'attached.png', exact: true }),
+  ).toHaveCount(0);
+  await toggle.check();
+  await expect(
+    page.getByRole('img', { name: 'attached.png', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('textbox', { name: 'Message', exact: true }).evaluate(
+    (element, bytes) => {
+      const clipboard = new DataTransfer();
+      clipboard.items.add(
+        new File([new Uint8Array(bytes)], 'pasted.png', {
+          type: 'image/png',
+          lastModified: 1,
+        }),
+      );
+      element.dispatchEvent(
+        new ClipboardEvent('paste', {
+          bubbles: true,
+          cancelable: true,
+          clipboardData: clipboard,
+        }),
+      );
+    },
+    Array.from(fixture('png')),
+  );
+  await expect(
+    page.getByRole('img', { name: 'pasted.png', exact: true }),
+  ).toBeVisible();
+  await toggle.uncheck();
+  await expect(page.locator('.texion-image-viewer')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Remove attached.png', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Remove pasted.png', exact: true }),
+  ).toBeVisible();
+});
+
 test('edits JSON, highlights syntax, warns on errors and submits exact source', async ({
   page,
 }) => {

@@ -11,7 +11,13 @@ export type HighlightKind =
   | 'list-marker'
   | 'blockquote'
   | 'frontmatter'
-  | 'thematic-break';
+  | 'thematic-break'
+  | 'property'
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'null'
+  | 'punctuation';
 
 /** Half-open offsets measured in JavaScript UTF-16 code units, including Markdown markers. */
 export interface HighlightToken {

@@ -1,4 +1,5 @@
 export interface Limits {
+  readonly maxImagePixels: number;
   readonly maxFiles: number;
   readonly maxFileSize: number;
   readonly maxPreviewCharacters: number;
@@ -7,6 +8,7 @@ export interface Limits {
 }
 
 export const defaultLimits: Limits = Object.freeze({
+  maxImagePixels: 40_000_000,
   maxFiles: 5,
   maxFileSize: 2_000_000,
   maxPreviewCharacters: 50_000,

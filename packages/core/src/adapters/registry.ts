@@ -1,8 +1,16 @@
 import type { FormatAdapter } from './contract';
 import { markdownAdapter } from './markdown';
+import { jsonAdapter } from './json';
+import { csvAdapter } from './csv';
+import { imageAdapter } from './image';
 
 export function createRegistry(
-  adapters: readonly FormatAdapter[] = [markdownAdapter],
+  adapters: readonly FormatAdapter[] = [
+    jsonAdapter,
+    markdownAdapter,
+    csvAdapter,
+    imageAdapter,
+  ],
   acceptedFormats?: readonly string[],
 ): readonly FormatAdapter[] {
   const seen = new Set<string>();

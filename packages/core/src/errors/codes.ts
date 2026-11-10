@@ -1,5 +1,11 @@
 export type ErrorCode =
-  'unsupported' | 'too-large' | 'too-many' | 'empty' | 'binary' | 'read-failed';
+  | 'unsupported'
+  | 'too-large'
+  | 'too-many'
+  | 'empty'
+  | 'binary'
+  | 'read-failed'
+  | 'invalid-image';
 
 export interface DocumentError {
   readonly code: ErrorCode;
@@ -7,7 +13,13 @@ export interface DocumentError {
 }
 
 export interface DocumentWarning {
-  readonly code: 'invalid-utf8' | 'parse-failed' | 'truncated';
+  readonly code:
+    | 'invalid-utf8'
+    | 'parse-failed'
+    | 'truncated'
+    | 'invalid-json'
+    | 'invalid-csv'
+    | 'too-complex';
   readonly message: string;
 }
 

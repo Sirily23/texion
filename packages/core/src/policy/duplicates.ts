@@ -38,5 +38,6 @@ export function duplicateKey(input: DocumentInput): string {
     typeof input === 'string' ? 'text' : (input.source ?? 'text'),
     inputName(input),
     typeof input === 'string' ? input : input.text,
+    typeof input === 'string' ? null : (input.format ?? null),
   ]);
 }

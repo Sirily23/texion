@@ -46,3 +46,29 @@ it('retains a document when a trusted adapter fails to parse', async () => {
   expect(doc.status).toBe('ready');
   expect(doc.getPreview?.().warnings[0]?.code).toBe('parse-failed');
 });
+
+it('supports trusted binary adapters on the same lifecycle and catches preview failures', async () => {
+  const document = await processDocument(
+    new File([new Uint8Array([0, 1, 2])], 'example.bin'),
+    {
+      adapters: [
+        {
+          kind: 'binary',
+          format: 'demo',
+          extensions: ['bin'],
+          mimeTypes: [],
+          detectBytes: () => true,
+          inspect: () => ({ metadata: { valid: true } }),
+          parse() {
+            throw new Error('bad preview');
+          },
+        },
+      ],
+    },
+  );
+  expect(document.status).toBe('ready');
+  expect(document.raw).toBeUndefined();
+  expect(document.metadata.valid).toBe(true);
+  expect(document.getPreview!().warnings[0]?.code).toBe('parse-failed');
+  expect(document.getPreview!()).toBe(document.getPreview!());
+});

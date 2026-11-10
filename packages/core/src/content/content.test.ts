@@ -19,7 +19,7 @@ it.each([
   null,
   {},
   { version: 2, format: 'markdown', source: '' },
-  { version: 1, format: 'json', source: '{}' },
+  { version: 1, format: 'html', source: '{}' },
   { version: 1, format: 'markdown', source: {} },
 ])('rejects unsupported content schemas: %j', (value) => {
   expect(isTexionContent(value)).toBe(false);

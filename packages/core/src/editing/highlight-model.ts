@@ -1,3 +1,5 @@
+import type { TextFormat } from '../content/types';
+import { tokenizeDataSource } from './data-tokens';
 import {
   resolveHighlightLimits,
   tokenizeMarkdownSource,
@@ -24,13 +26,14 @@ export interface HighlightModel {
 
 export interface HighlightOptions extends HighlightLimits {
   readonly enabled?: boolean;
+  readonly format?: TextFormat;
 }
 
 export function createHighlightModel(
   text: string,
   options: HighlightOptions = {},
 ): HighlightModel {
-  const { enabled, ...requestedLimits } = options;
+  const { enabled, format = 'markdown', ...requestedLimits } = options;
   const limits = resolveHighlightLimits(requestedLimits);
 
   function plain(
@@ -56,7 +59,10 @@ export function createHighlightModel(
   let result: ReturnType<typeof tokenizeMarkdownSource>;
 
   try {
-    result = tokenizeMarkdownSource(text, limits);
+    result =
+      format === 'markdown'
+        ? tokenizeMarkdownSource(text, limits)
+        : tokenizeDataSource(text, format, limits);
   } catch {
     return plain('parse-failed');
   }

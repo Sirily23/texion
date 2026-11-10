@@ -9,11 +9,19 @@ export interface TextInput {
   readonly text: string;
   readonly name?: string;
   readonly source?: 'paste' | 'text';
+  readonly format?: string;
 }
 
 export type DocumentInput = string | Blob | TextInput;
 
+export interface ImageInfo {
+  readonly mimeType: 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp';
+  readonly width: number;
+  readonly height: number;
+}
+
 export interface DocumentPreview {
+  readonly image?: ImageInfo;
   readonly nodes: readonly PreviewNode[];
   readonly truncated: boolean;
   readonly warnings: readonly DocumentWarning[];

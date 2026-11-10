@@ -1,6 +1,6 @@
 import { parseMarkdown } from './parser';
 import type { MarkdownSyntaxNode } from './parser';
-import type { FormatAdapter } from '../contract';
+import type { TextFormatAdapter } from '../contract';
 import type { PreviewNode } from '../../policy/output';
 import { safeUrl } from '../../policy/output';
 import { markdownExtensions, markdownMimeTypes } from '../../policy/formats';
@@ -126,7 +126,7 @@ export function tokenizeMarkdown(
   });
 }
 
-export const markdownAdapter: FormatAdapter = Object.freeze({
+export const markdownAdapter: TextFormatAdapter = Object.freeze({
   format: 'markdown',
   extensions: markdownExtensions,
   mimeTypes: markdownMimeTypes,

@@ -50,6 +50,7 @@ function createPendingDocument(
 
   return freezeDocument({
     ...base,
+    format: typeof input === 'string' ? 'unknown' : (input.format ?? 'unknown'),
     source,
     raw,
     size: new TextEncoder().encode(raw).byteLength,
@@ -198,11 +199,14 @@ export function createController(options: ControllerOptions = {}) {
     remove,
     cancel: remove,
     clear,
-    setText(text: string) {
+    setText(text: string, format?: string) {
       remove('text');
 
       if (text) {
-        add({ text, source: 'text', name: 'Text' }, true);
+        add(
+          { text, source: 'text', name: 'Text', ...(format ? { format } : {}) },
+          true,
+        );
       }
     },
     whenSettled(id: string): Promise<TexionDocument | undefined> {

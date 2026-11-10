@@ -14,15 +14,22 @@ export function deserializeContent(serialized: string): TexionContent {
   if (!isTexionContent(value)) {
     throw new TypeError('Unsupported Texion content.');
   }
-  return createContent(
-    value.source,
-    value.originalSource === undefined
+  return createContent(value.source, {
+    format: value.format,
+    ...(value.originalSource === undefined
       ? {}
-      : { originalSource: value.originalSource },
-  );
+      : { originalSource: value.originalSource }),
+  });
 }
 
 export function exportMarkdown(content: TexionContent): string {
+  if (!isTexionContent(content) || content.format !== 'markdown') {
+    throw new TypeError('Unsupported Texion content.');
+  }
+  return content.source;
+}
+
+export function exportSource(content: TexionContent): string {
   if (!isTexionContent(content)) {
     throw new TypeError('Unsupported Texion content.');
   }

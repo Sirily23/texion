@@ -69,7 +69,7 @@ export const HighlightedTextareaSurface = forwardRef<
   forwardedRef,
 ) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<Layout>();
   const [forcedColors, setForcedColors] = useState(false);
   const value = String(textareaProps.value ?? '');
@@ -78,8 +78,9 @@ export const HighlightedTextareaSurface = forwardRef<
   const syncScroll = useCallback(() => {
     const textarea = textareaRef.current;
 
-    if (textarea && overlayRef.current) {
-      overlayRef.current.style.transform = `translate(${-textarea.scrollLeft}px, ${-textarea.scrollTop}px)`;
+    if (textarea && viewportRef.current) {
+      viewportRef.current.scrollTop = textarea.scrollTop;
+      viewportRef.current.scrollLeft = textarea.scrollLeft;
     }
   }, []);
   const synchronize = useCallback(() => {
@@ -222,6 +223,7 @@ export const HighlightedTextareaSurface = forwardRef<
       />
       {active && (
         <div
+          ref={viewportRef}
           data-texion-overlay-viewport=""
           aria-hidden="true"
           style={{
@@ -229,20 +231,14 @@ export const HighlightedTextareaSurface = forwardRef<
             pointerEvents: 'none',
             userSelect: 'none',
             overflow: 'hidden',
+            direction: layout.content.direction,
             left: layout.left,
             top: layout.top,
             width: layout.width,
             height: layout.height,
           }}
         >
-          <HighlightOverlay
-            ref={overlayRef}
-            model={model}
-            style={{
-              ...layout.content,
-              transform: `translate(${-textareaRef.current!.scrollLeft}px, ${-textareaRef.current!.scrollTop}px)`,
-            }}
-          />
+          <HighlightOverlay model={model} style={layout.content} />
         </div>
       )}
     </div>

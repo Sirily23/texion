@@ -141,8 +141,10 @@ test('matches textarea geometry across wrapping, tabs, scrolling, resizing and f
         sourceSpacing: sourceStyle.letterSpacing,
         tabSize: mirrorStyle.tabSize,
         sourceTabSize: sourceStyle.tabSize,
-        transform: overlay.style.transform,
-        expectedTransform: `translate(${-element.scrollLeft}px, ${-element.scrollTop}px)`,
+        overlayTop: viewport.scrollTop,
+        overlayLeft: viewport.scrollLeft,
+        sourceTop: element.scrollTop,
+        sourceLeft: element.scrollLeft,
       };
     });
   await expect
@@ -169,7 +171,10 @@ test('matches textarea geometry across wrapping, tabs, scrolling, resizing and f
     .poll(async () => {
       const g = await geometry();
 
-      return g.transform === g.expectedTransform;
+      return (
+        Math.abs(g.overlayTop - g.sourceTop) < 0.5 &&
+        Math.abs(g.overlayLeft - g.sourceLeft) < 0.5
+      );
     })
     .toBe(true);
   await textarea.evaluate((element: HTMLTextAreaElement) => {
@@ -200,7 +205,62 @@ test('matches textarea geometry across wrapping, tabs, scrolling, resizing and f
     .poll(async () => {
       const g = await geometry();
 
-      return g.transform === g.expectedTransform;
+      return (
+        Math.abs(g.overlayTop - g.sourceTop) < 0.5 &&
+        Math.abs(g.overlayLeft - g.sourceLeft) < 0.5
+      );
     })
     .toBe(true);
+});
+
+test('keeps highlighted text sharp and aligned during mouse-wheel scrolling at fractional zoom', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const textarea = page.getByRole('textbox', { name: 'Message', exact: true });
+  const source =
+    '# Scroll notes\n' +
+    Array.from(
+      { length: 80 },
+      (_, index) => `**Line ${index}** with Markdown and native scrolling.\n`,
+    ).join('');
+  await textarea.fill(source);
+  await page.evaluate(() => {
+    document.body.style.zoom = '1.25';
+  });
+  await textarea.evaluate((element: HTMLTextAreaElement) => {
+    element.style.lineHeight = '23.5px';
+    element.style.fontSize = '17px';
+    element.scrollTop = 0;
+  });
+  await textarea.hover();
+  const selection = await textarea.evaluate(
+    (element: HTMLTextAreaElement) => element.selectionStart,
+  );
+  await page.mouse.wheel(0, 233.6);
+  await expect
+    .poll(() =>
+      textarea.evaluate((element: HTMLTextAreaElement) => element.scrollTop),
+    )
+    .toBeGreaterThan(0);
+  const read = () =>
+    textarea.evaluate((element: HTMLTextAreaElement) => {
+      const overlay = element.parentElement!.querySelector<HTMLElement>(
+        '[data-texion-highlight-overlay]',
+      )!;
+      const viewport = overlay.parentElement!;
+      return {
+        difference: Math.abs(viewport.scrollTop - element.scrollTop),
+        transform: getComputedStyle(overlay).transform,
+        hiddenNativeText: getComputedStyle(element).webkitTextFillColor,
+        selected: element.selectionStart,
+      };
+    });
+  await expect.poll(async () => (await read()).difference).toBeLessThan(0.5);
+  expect((await read()).transform).toBe('none');
+  expect((await read()).hiddenNativeText).toBe('rgba(0, 0, 0, 0)');
+  expect((await read()).selected).toBe(selection);
+  await expect(textarea).toHaveValue(source);
+  await page.mouse.wheel(0, -113.2);
+  await expect.poll(async () => (await read()).difference).toBeLessThan(0.5);
 });

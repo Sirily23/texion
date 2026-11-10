@@ -1,11 +1,16 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
-import { createContent } from '@texion/core';
-import type { TexionContent, TexionDocument } from '@texion/core';
+import { createContent, isTextFormat } from '@texion/core';
+import type {
+  TexionContent,
+  TexionDocument,
+  TextFormat,
+  BuiltinFormat,
+} from '@texion/core';
 import type { RichMarkdownEditorProps } from '../editors/rich/RichMarkdownEditor';
 import { useAttachmentController } from '../controllers/attachments';
 import type { AttachmentOptions } from '../controllers/attachments';
-import { useMarkdownInput } from './useMarkdownInput';
+import { useSourceInput } from './useSourceInput';
 
 export interface Submission {
   readonly content: TexionContent;
@@ -17,8 +22,8 @@ export interface Submission {
 
 export interface UseTexionOptions extends AttachmentOptions {
   readonly defaultValue?: string;
-  readonly format?: 'markdown';
-  readonly formats?: readonly 'markdown'[];
+  readonly format?: TextFormat | 'auto';
+  readonly formats?: readonly BuiltinFormat[];
   readonly highlight?: boolean;
   readonly maxHighlightCharacters?: number;
   readonly submitOnEnter?: boolean;
@@ -29,9 +34,13 @@ export function useTexion(options: UseTexionOptions = {}) {
   if (
     options.formats &&
     (!options.formats.length ||
-      options.formats.some((format) => format !== 'markdown'))
+      options.formats.some(
+        (format) => !['markdown', 'json', 'csv', 'image'].includes(format),
+      ))
   ) {
-    throw new RangeError('Only Markdown is supported in this release.');
+    throw new RangeError(
+      'Choose at least one supported format: markdown, json, csv, or image.',
+    );
   }
   const attachments = useAttachmentController(
     options.formats && !options.acceptedFormats
@@ -44,7 +53,10 @@ export function useTexion(options: UseTexionOptions = {}) {
   const originalSource = useRef(options.defaultValue);
   const [isSubmitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>();
-  const input = useMarkdownInput({
+  const allowedTextFormats = options.formats?.filter(isTextFormat);
+  const input = useSourceInput({
+    language: options.format ?? 'auto',
+    ...(allowedTextFormats ? { allowedFormats: allowedTextFormats } : {}),
     ...(options.defaultValue === undefined
       ? {}
       : { defaultValue: options.defaultValue }),
@@ -58,6 +70,14 @@ export function useTexion(options: UseTexionOptions = {}) {
       void submit();
     },
   });
+  useEffect(() => {
+    const document = controller
+      .getSnapshot()
+      .documents.find((candidate) => candidate.id === 'text');
+    if (document && document.format !== input.format) {
+      controller.remove('text');
+    }
+  }, [controller, input.format]);
   const textDocument = snapshot.documents.find(
     (document) => document.id === 'text',
   );
@@ -67,6 +87,7 @@ export function useTexion(options: UseTexionOptions = {}) {
       return false;
     }
     const text = input.getValue();
+    const format = input.getFormat();
 
     if (!text.trim() && !attachments.documents.length) {
       return false;
@@ -77,14 +98,15 @@ export function useTexion(options: UseTexionOptions = {}) {
 
     try {
       // Editing stays in its editor. Only requested processing enters the document lifecycle.
-      controller.setText(text.trim() ? text : '');
+      controller.setText(text.trim() ? text : '', format);
       const captured = controller.getSnapshot().documents;
       const settled = await Promise.all(
         captured.map((document) => controller.whenSettled(document.id)),
       );
       const current = controller.getSnapshot().documents;
 
-      const textChanged = input.getValue() !== text;
+      const textChanged =
+        input.getValue() !== text || input.getFormat() !== format;
       const hasUnreadyDocuments = settled.some(
         (document) => !document || document.status !== 'ready',
       );
@@ -107,8 +129,8 @@ export function useTexion(options: UseTexionOptions = {}) {
         content: createContent(
           text,
           originalSource.current === undefined
-            ? {}
-            : { originalSource: originalSource.current },
+            ? { format }
+            : { format, originalSource: originalSource.current },
         ),
         ...(primary ? { textDocument: primary } : {}),
       });
@@ -144,7 +166,14 @@ export function useTexion(options: UseTexionOptions = {}) {
   function getRichEditorProps(
     props: Partial<RichMarkdownEditorProps> = {},
   ): RichMarkdownEditorProps {
+    if (input.format !== 'markdown') {
+      throw new Error('JSON and CSV use source editing, not rich conversion.');
+    }
     return {
+      formats:
+        options.format && options.format !== 'auto'
+          ? [options.format]
+          : (allowedTextFormats ?? ['markdown', 'json', 'csv']),
       ...props,
       value: input.value,
       onChange(source) {
@@ -179,9 +208,11 @@ export function useTexion(options: UseTexionOptions = {}) {
     content: createContent(
       input.value,
       originalSource.current === undefined
-        ? {}
-        : { originalSource: originalSource.current },
+        ? { format: input.format }
+        : { format: input.format, originalSource: originalSource.current },
     ),
+    format: input.format,
+    warnings: input.warnings,
     getRichEditorProps,
     text: input.value,
     textDocument,

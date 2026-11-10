@@ -1,3 +1,4 @@
+import { isTextFormat } from '@texion/core';
 import { Suspense, lazy, useEffect, useId, useState } from 'react';
 import type { UseTexionOptions } from '../hooks/useTexion';
 import { useTexion } from '../hooks/useTexion';
@@ -35,8 +36,10 @@ export function TexionInput({
   useEffect(() => setEditorMode(mode), [mode]);
   const texion = useTexion({
     ...options,
+    format: options.format ?? (editorMode === 'rich' ? 'markdown' : 'auto'),
     highlight: editorMode === 'source' && !!options.highlight,
   });
+  const canUseRich = texion.format === 'markdown';
   const id = useId();
   const [previewId, setPreviewId] = useState<string>();
   const [showTextPreview, setShowTextPreview] = useState(false);
@@ -47,7 +50,7 @@ export function TexionInput({
   return (
     <div {...texion.getRootProps({ className })}>
       <label htmlFor={id}>{label}</label>
-      {modeSwitch && (
+      {modeSwitch && canUseRich && (
         <button
           type="button"
           onClick={() =>
@@ -57,10 +60,18 @@ export function TexionInput({
           {editorMode === 'rich' ? 'Edit Markdown source' : 'Edit rich content'}
         </button>
       )}
-      {editorMode === 'rich' ? (
+      {editorMode === 'rich' && canUseRich ? (
         <Suspense fallback={<p role="status">Loading rich editor…</p>}>
           <RichEditor
             {...texion.getRichEditorProps({
+              formats:
+                options.format && options.format !== 'auto'
+                  ? [options.format]
+                  : (options.formats?.filter(isTextFormat) ?? [
+                      'markdown',
+                      'json',
+                      'csv',
+                    ]),
               id,
               label,
               placeholder,
@@ -76,6 +87,14 @@ export function TexionInput({
           model={texion.highlightModel}
         />
       )}
+      {texion.warnings.map((warning, index) => (
+        <p role="status" key={index}>
+          {warning.message}
+        </p>
+      ))}
+      {texion.textDocument?.error && (
+        <p role="alert">{texion.textDocument.error.message}</p>
+      )}
       {preview && !!texion.text.trim() && (
         <button
           type="button"
@@ -86,22 +105,22 @@ export function TexionInput({
         </button>
       )}
       {preview && showTextPreview && !!texion.text.trim() && (
-        <DocumentViewer format="markdown" content={texion.text} />
+        <DocumentViewer format={texion.format} content={texion.text} />
       )}
       {options.attachments !== false && (
         <>
           <input
             {...texion.getInputProps({
               hidden: true,
-              'aria-label': 'Choose Markdown files',
+              'aria-label': 'Choose files',
             })}
           />
           <button type="button" onClick={texion.openPicker}>
-            Attach Markdown
+            Attach files
           </button>
         </>
       )}
-      {texion.isDragging && <p role="status">Drop Markdown files here</p>}
+      {texion.isDragging && <p role="status">Drop supported files here</p>}
       {texion.inputError && <p role="alert">{texion.inputError}</p>}
       <AttachmentList
         documents={texion.documents}

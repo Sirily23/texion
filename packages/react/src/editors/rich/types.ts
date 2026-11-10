@@ -1,5 +1,8 @@
+import type { TextFormat } from '@texion/core';
+
 export interface RichMarkdownEditorProps {
   readonly value: string;
+  readonly formats?: readonly TextFormat[];
   readonly onChange: (source: string) => void;
   readonly onImport?: (source: string) => void;
   readonly onSubmit?: () => void;

@@ -7,8 +7,8 @@ import {
   useState,
 } from 'react';
 import type { CSSProperties, TextareaHTMLAttributes } from 'react';
-import type { HighlightModel } from '@texion/core';
-import { useMarkdownInput } from '../hooks/useMarkdownInput';
+import type { HighlightModel, TextFormat } from '@texion/core';
+import { useSourceInput } from '../hooks/useSourceInput';
 import { HighlightOverlay } from '../rendering/HighlightOverlay';
 
 const useClientLayoutEffect =
@@ -256,7 +256,7 @@ export interface HighlightedTextareaProps extends Omit<
   readonly value?: string;
   readonly defaultValue?: string;
   readonly onChange?: (value: string) => void;
-  readonly language?: 'markdown';
+  readonly language?: TextFormat;
   readonly highlight?: boolean;
   readonly maxHighlightCharacters?: number;
   readonly wrapperClassName?: string;
@@ -278,7 +278,7 @@ export const HighlightedTextarea = forwardRef<
   },
   ref,
 ) {
-  const input = useMarkdownInput({
+  const input = useSourceInput({
     language,
     highlight,
     ...(value === undefined ? {} : { value }),
@@ -288,11 +288,18 @@ export const HighlightedTextarea = forwardRef<
   });
 
   return (
-    <HighlightedTextareaSurface
-      ref={ref}
-      textareaProps={input.getTextareaProps(props)}
-      model={input.highlightModel}
-      wrapperClassName={wrapperClassName}
-    />
+    <>
+      <HighlightedTextareaSurface
+        ref={ref}
+        textareaProps={input.getTextareaProps(props)}
+        model={input.highlightModel}
+        wrapperClassName={wrapperClassName}
+      />
+      {input.warnings.map((warning, index) => (
+        <p role="status" key={index}>
+          {warning.message}
+        </p>
+      ))}
+    </>
   );
 });

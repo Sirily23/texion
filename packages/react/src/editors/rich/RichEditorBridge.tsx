@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
   $addUpdateTag,
+  $createTextNode,
   $getRoot,
   $getSelection,
   $insertNodes,
@@ -19,6 +20,8 @@ import {
 } from '@lexical/markdown';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { DEFAULT_TRANSFORMERS } from '@lexical/react/LexicalMarkdownShortcutPlugin';
+import { $createCodeNode } from '@lexical/code';
+import { detectTextFormat } from '@texion/core';
 import { richImportIssue } from './compatibility';
 import type { RichMarkdownEditorProps } from './types';
 
@@ -97,6 +100,23 @@ export function RichEditorBridge({
       }
 
       const wasEmpty = $getRoot().getTextContentSize() === 0;
+      const recognized = detectTextFormat(text, current.current.formats);
+      if (recognized !== 'markdown') {
+        if (wasEmpty && current.current.onRequestSource) {
+          current.current.onImport?.(text);
+          current.current.onChange(text);
+          current.current.onRequestSource();
+        } else {
+          if (!$isRangeSelection($getSelection())) {
+            $getRoot().selectEnd();
+          }
+          $addUpdateTag(HISTORY_PUSH_TAG);
+          $insertNodes([
+            $createCodeNode(recognized).append($createTextNode(text)),
+          ]);
+        }
+        return true;
+      }
       const issue = richImportIssue(
         text,
         current.current.maxCharacters ?? 50_000,

@@ -79,9 +79,7 @@ it('keeps editing independent from ingestion and processes the final source on s
 
 it('resets the picker so the same file can be selected after removal', async () => {
   render(<TexionInput />);
-  const picker = screen.getByLabelText(
-    'Choose Markdown files',
-  ) as HTMLInputElement;
+  const picker = screen.getByLabelText('Choose files') as HTMLInputElement;
   const file = markdownFile();
   fireEvent.change(picker, { target: { files: [file] } });
   await screen.findByText('ready');

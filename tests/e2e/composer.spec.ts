@@ -15,7 +15,7 @@ test('upload, preview safely, remove, reselect, and submit original content', as
   await expect(
     page.getByRole('heading', { name: 'Shared core engine' }),
   ).toBeVisible();
-  const picker = page.getByLabel('Choose Markdown files');
+  const picker = page.getByLabel('Choose files');
   const file = {
     name: 'note.md',
     mimeType: 'text/markdown',
@@ -66,7 +66,7 @@ test('keeps native composition and keyboard access', async ({ page }) => {
   ).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(
-    page.getByRole('button', { name: 'Attach Markdown' }),
+    page.getByRole('button', { name: 'Attach files' }),
   ).toBeFocused();
 });
 
@@ -89,9 +89,9 @@ test('keeps nested drag feedback steady and leaves large text paste native', asy
   const textarea = page.getByRole('textbox', { name: 'Message' });
   await textarea.dispatchEvent('dragenter', { dataTransfer: transfer });
   await root.dispatchEvent('dragleave', { dataTransfer: transfer });
-  await expect(page.getByText('Drop Markdown files here')).toBeVisible();
+  await expect(page.getByText('Drop supported files here')).toBeVisible();
   await textarea.dispatchEvent('drop', { dataTransfer: transfer });
-  await expect(page.getByText('Drop Markdown files here')).toHaveCount(0);
+  await expect(page.getByText('Drop supported files here')).toHaveCount(0);
   await expect(
     page.getByRole('button', { name: 'Remove drop.md' }),
   ).toBeVisible();

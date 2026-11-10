@@ -3,6 +3,12 @@ import type { CSSProperties } from 'react';
 import type { HighlightKind, HighlightModel } from '@texion/core';
 
 const colors: Record<HighlightKind, string> = {
+  property: 'var(--texion-highlight-property, #7e22ce)',
+  string: 'var(--texion-highlight-string, #047857)',
+  number: 'var(--texion-highlight-number, #b45309)',
+  boolean: 'var(--texion-highlight-boolean, #1d4ed8)',
+  null: 'var(--texion-highlight-null, #a21caf)',
+  punctuation: 'var(--texion-highlight-punctuation, #64748b)',
   heading: 'var(--texion-highlight-heading, #1d4ed8)',
   bold: 'var(--texion-highlight-bold, #7e22ce)',
   italic: 'var(--texion-highlight-italic, #a21caf)',

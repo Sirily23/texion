@@ -32,3 +32,8 @@ export { TexionViewer } from './components/TexionViewer';
 export type { TexionViewerProps } from './components/TexionViewer';
 
 export type { RichMarkdownEditorProps } from './editors/rich/RichMarkdownEditor';
+
+export { useSourceInput } from './hooks/useSourceInput';
+export type { UseSourceInputOptions } from './hooks/useSourceInput';
+
+export type { PreviewRendererProps } from './renderers/types';

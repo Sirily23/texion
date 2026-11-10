@@ -15,7 +15,7 @@ import { createController } from '@texion/core';
 import type { ControllerOptions, DocumentInput } from '@texion/core';
 import { filesFromDrop, isFileDrag } from '../dom/drop';
 import { readClipboard } from '../dom/paste';
-import { markdownAccept, takeFiles } from '../dom/picker';
+import { acceptForFormats, takeFiles } from '../dom/picker';
 import { defaultPasteThreshold } from './presentation';
 
 export interface AttachmentOptions extends ControllerOptions {
@@ -110,7 +110,7 @@ export function useAttachmentController(options: AttachmentOptions) {
         const result = filesFromDrop(event.dataTransfer);
         setInputError(
           result.hasFolders
-            ? 'Folders are not supported. Select individual Markdown files.'
+            ? 'Folders are not supported. Select individual supported files.'
             : undefined,
         );
         result.files.forEach(addDocument);
@@ -124,7 +124,7 @@ export function useAttachmentController(options: AttachmentOptions) {
       ref: inputRef,
       type: 'file' as const,
       multiple: true,
-      accept: markdownAccept,
+      accept: props.accept ?? acceptForFormats(options.acceptedFormats),
       disabled: !enabled || props.disabled,
       onChange(event: ChangeEvent<HTMLInputElement>) {
         props.onChange?.(event);

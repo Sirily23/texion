@@ -40,3 +40,6 @@ export type { PreviewRendererProps, RendererRegistry } from './renderers/types';
 
 export { useTexionAttachments } from './hooks/useTexionAttachments';
 export type { UseTexionAttachmentsOptions } from './hooks/useTexionAttachments';
+
+export { TexionMessageViewer } from './components/TexionMessageViewer';
+export type { TexionMessageViewerProps, AttachmentResolver } from './components/TexionMessageViewer';

@@ -164,3 +164,29 @@
 .texion-image-viewer figcaption {
   margin-block-start: 0.5rem;
 }
+
+.texion-message > ul {
+  list-style: none;
+  padding: 0;
+}
+.texion-saved-attachment {
+  border: 1px solid var(--texion-border);
+  border-radius: var(--texion-radius);
+  padding: 0.75rem;
+  margin-block: 0.5rem;
+}
+.texion-saved-attachment > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.texion-saved-attachment > div > span {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+.texion-saved-attachment > button {
+  color: var(--texion-accent);
+  font-size: 0.8rem;
+  margin-block-start: 0.5rem;
+}

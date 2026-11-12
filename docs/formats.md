@@ -1,6 +1,6 @@
-# JSON, CSV and image support
+# Supported formats
 
-Texion has built-in adapters for Markdown, JSON, CSV and local raster images. They all use the core controller for validation, lifecycle state, cancellation, immutable snapshots and lazy preview caching. File extensions take precedence over MIME types and content detection.
+Texion has built-in adapters for Markdown, plain text (TXT), JSON, CSV, PDF, DOCX and local raster images. They all use the core controller for validation, lifecycle state, cancellation, immutable snapshots and lazy preview caching. File extensions take precedence over MIME types and content detection.
 
 ## JSON and CSV source editing
 
@@ -28,11 +28,11 @@ import '@texion/react/styles.css';
 />;
 ```
 
-`format` accepts `markdown`, `json`, `csv`, or `auto`. Source inputs and `useTexion` default to automatic recognition. Set `format="markdown"` to retain Markdown behavior explicitly. `formats` restricts accepted built-in formats, including attachments; `acceptedFormats` remains available for custom adapter identifiers. Limits, adapters and accepted formats are fixed when the controller mounts.
+`format` accepts `markdown`, `text`, `json`, `csv`, or `auto`. Source inputs and `useTexion` default to automatic recognition. Set `format="markdown"` to retain Markdown behavior explicitly. `formats` restricts accepted built-in formats, including attachments; `acceptedFormats` remains available for custom adapter identifiers. Limits, adapters and accepted formats are fixed when the controller mounts.
 
 Automatic recognition prefers object/array JSON candidates, then Markdown syntax, then consistent multirow CSV. It does not classify ordinary chat such as `true`, `123`, or a single comma-containing sentence as JSON or CSV. Choose JSON explicitly to edit scalar values or CSV explicitly for ambiguous single-row data.
 
-`useSourceInput` provides the existing native textarea behavior for all three text formats. It returns `format`, `warnings`, `highlightModel`, selection information, and `getTextareaProps`. `useMarkdownInput` remains a Markdown-specific wrapper. Highlighting and live diagnostics pause above the configured size limit and during composition. Full validation runs when processing or submitting.
+`useSourceInput` provides the existing native textarea behavior for all four text formats. It returns `format`, `warnings`, `highlightModel`, selection information, and `getTextareaProps`. `useMarkdownInput` remains a Markdown-specific wrapper. Highlighting and live diagnostics pause above the configured size limit and during composition. Full validation runs when processing or submitting.
 
 JSON is strict: comments, trailing commas, NaN and incomplete syntax produce warnings. Malformed JSON stays editable and attachable. The structured viewer uses source offsets for literals, so large integers are displayed without numeric rounding. The library does not merge parsed JSON into application objects or evaluate its contents. Nesting, preview characters and output node counts are bounded.
 
@@ -53,7 +53,7 @@ const csvDocument = await processDocument(csvFile);
 const message = createContent('name,value\nAda,001', { format: 'csv' });
 ```
 
-`TexionContent` remains a JSON-serializable source representation. Its `format` can now be Markdown, JSON or CSV. `serializeContent` and `deserializeContent` preserve that format; `exportSource` returns any supported text source. `exportMarkdown` accepts Markdown content only.
+`TexionContent` remains a JSON-serializable source representation. Its `format` can now be Markdown, plain text, JSON or CSV. `serializeContent` and `deserializeContent` preserve that format; `exportSource` returns any supported text source. `exportMarkdown` accepts Markdown content only.
 
 `<DocumentViewer format="json" content={source} />` forces source interpretation. `<DocumentViewer input={file} />` uses extension/MIME detection. `<DocumentViewer document={document} />` reuses an already processed snapshot without a second lifecycle. Default renderers are selected by document format and loaded lazily.
 
@@ -77,7 +77,7 @@ Rich formatting remains a Markdown editing model. JSON and CSV source are never 
 />
 ```
 
-PNG, JPEG, GIF and WebP are supported. SVG, AVIF, PDF, DOCX and arbitrary binary files are not built-in formats. Image inspection runs on bytes rather than text decoding. It checks raster signatures, declared file type, header dimensions, byte limits and pixel limits. `maxImagePixels` defaults to 40,000,000 pixels per image; the existing 2,000,000-byte default still applies unless overridden.
+PNG, JPEG, GIF and WebP are supported. SVG, AVIF and arbitrary binary files are not built-in formats. Image inspection runs on bytes rather than text decoding. It checks raster signatures, declared file type, header dimensions, byte limits and pixel limits. `maxImagePixels` defaults to 40,000,000 pixels per image; the existing 2,000,000-byte default still applies unless overridden.
 
 An image document has `format: 'image'`, the original `file`/`blob`, image metadata and a lazy preview descriptor. It has no decoded `raw` text. Image attachments are separate from the text-based `TexionContent` object. Use `DocumentViewer` to preview an image attachment.
 
@@ -89,4 +89,33 @@ The library performs no uploads, storage calls or remote image requests. Remote 
 
 ## Adapter contract
 
-Text adapters can provide `inspect(text, limits)` for metadata and warnings, and `parse(text, limits, metadata)` for a lazy safe preview. Existing Markdown-style adapters without `kind` remain text adapters. Binary adapters declare `kind: 'binary'`, byte detection, header inspection and a byte-based preview function. Third-party adapters and custom renderers remain trusted application code.
+Text adapters can provide `inspect(text, limits)` for metadata and warnings, and `parse(text, limits, metadata)` for a lazy safe preview. Existing Markdown-style adapters without `kind` remain text adapters. Binary adapters declare `kind: 'binary'`, byte detection, header inspection and a byte-based preview function. They can optionally provide asynchronous `extract(bytes, limits, signal)` to return `raw` text, metadata and warnings during processing; extracted text gets a lazy plain text preview. Third-party adapters and custom renderers remain trusted application code.
+
+Previews, attachment lists and input feedback appear above the editor by default in `TexionInput`. Use the **Preview position** selector to move them below the input, or set `previewPosition="below"` for that initial layout. This applies to both chat composers and form inputs.
+
+## TXT, PDF and DOCX attachments
+
+TXT (`.txt`, `text/plain`), PDF (`.pdf`, `application/pdf`) and DOCX (`.docx`, the standard Word OOXML MIME type) use the same upload, paste, drop, preview and submission lifecycle. The default picker includes all three. Restrict them with `formats` or `acceptedFormats` when needed.
+
+```tsx
+<TexionInput
+  formats={['markdown', 'text', 'pdf', 'docx']}
+  preview
+  onSubmit={({ attachments }) => {
+    // PDF/DOCX raw contains extracted text; file/blob retains the original bytes.
+    for (const attachment of attachments) {
+      console.log(attachment.name, attachment.raw);
+    }
+  }}
+/>
+```
+
+TXT stays literal, including Markdown markers and HTML. Use `format="text"` for a plain text composer or `createContent(source, { format: 'text' })` for saved plain text. Auto detection of typed content still defaults to Markdown.
+
+PDF and DOCX parsers load on demand during attachment processing. Once ready, `raw` holds extracted text for downstream applications or LLMs. Previews show bounded, escaped text; original page layout, embedded images and Word formatting are not reproduced. PDF metadata includes the page count. Scanned PDFs and image-only DOCX documents produce a `no-text` warning; OCR is not enabled by default. Password-protected or damaged documents produce an `invalid-document` error. Legacy `.doc`, `.xls` and generic ZIP files are not supported.
+
+The existing 2 MB file limit still applies. Additional configurable defaults are `maxDocumentPages: 200` (PDF), `maxExtractedCharacters: 1_000_000` (PDF/DOCX), and `maxArchiveBytes: 20_000_000` (expanded DOCX). Extraction beyond a limit rejects the attachment with `too-large`; preview truncation alone preserves the full extracted text. Cancellation prevents removed documents from returning to the attachment list.
+
+## Opt-in OCR
+
+The default PDF adapter extracts native text only. Use `createPdfAdapter({ ocr: ... })` with an optional engine to recognize scanned candidate pages. See [Scanned PDFs and OCR](ocr.md) for local assets, consent, limits, confidence, and execution boundaries.

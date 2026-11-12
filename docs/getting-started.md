@@ -1,6 +1,6 @@
 # Getting started
 
-Texion has two packages: `@texion/core` and `@texion/react`. Markdown, JSON, CSV and local PNG/JPEG/GIF/WebP images have built-in adapters.
+Texion has two packages: `@texion/core` and `@texion/react`. Markdown, plain text (TXT), JSON, CSV, PDF, DOCX and local PNG/JPEG/GIF/WebP images have built-in adapters.
 
 ```tsx
 import { TexionInput } from '@texion/react';
@@ -49,7 +49,7 @@ Inline editing is independent from ingestion. Text is processed when submitting 
 
 `useDocument(input)` and `<DocumentViewer input={fileOrText} />` use that same controller. To reuse an existing attachment without reprocessing, pass `<DocumentViewer document={document} />`. The default renderer loads lazily. For an explicit renderer import `MarkdownRenderer` from `@texion/react/markdown` and pass it as `renderer`.
 
-Limits default to 5 attachments, 2,000,000 bytes per document, 50,000 preview characters, 5,000 preview nodes, and depth 64. Limits must be positive safe integers. Preview truncation preserves the complete `raw` source. UTF-8 and BOM-marked UTF-16 are supported; invalid encoding bytes are replaced with a warning. Newlines and front matter remain in `raw`; `metadata.frontMatter` contains unparsed front matter. File extensions take precedence over MIME and content detection. `.txt`, SVG, PDF, DOCX and other unregistered file types are rejected. JSON, CSV and supported raster images use their own adapters.
+Limits default to 5 attachments, 2,000,000 bytes per document, 50,000 preview characters, 5,000 preview nodes, and depth 64. Limits must be positive safe integers. Preview truncation preserves the complete `raw` source. UTF-8 and BOM-marked UTF-16 are supported; invalid encoding bytes are replaced with a warning. Newlines and front matter remain in `raw`; `metadata.frontMatter` contains unparsed front matter. File extensions take precedence over MIME and content detection. SVG and other unregistered file types are rejected. TXT, JSON, CSV, PDF, DOCX and supported raster images use their own adapters. PDF/DOCX attachments expose extracted text in `raw` while retaining the original file; see [supported formats](formats.md) for extraction limits and OCR limitations.
 
 From this repository, use Node 20.19 or newer, run `pnpm install`, then `pnpm build`, `pnpm typecheck`, and `pnpm test`. `pnpm dev` opens the composer example. Browser tests require `pnpm exec playwright install chromium --no-shell` followed by `pnpm test:browser`.
 

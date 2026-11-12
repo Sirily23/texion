@@ -1,4 +1,4 @@
-import type { TexionContent, TextFormat } from './types';
+import type { TexionContent, ContentFormat } from './types';
 
 export function isTexionContent(value: unknown): value is TexionContent {
   if (!value || typeof value !== 'object') {
@@ -9,7 +9,7 @@ export function isTexionContent(value: unknown): value is TexionContent {
   return (
     content.version === 1 &&
     typeof content.format === 'string' &&
-    ['markdown', 'json', 'csv'].includes(content.format) &&
+    isContentFormat(content.format) &&
     typeof content.source === 'string' &&
     (content.originalSource === undefined ||
       typeof content.originalSource === 'string')
@@ -20,7 +20,7 @@ export function createContent(
   source: string,
   options: {
     readonly originalSource?: string;
-    readonly format?: TextFormat;
+    readonly format?: ContentFormat;
   } = {},
 ): TexionContent {
   if (
@@ -30,7 +30,7 @@ export function createContent(
   ) {
     throw new TypeError('Content source must be a string.');
   }
-  if (options.format && !['markdown', 'json', 'csv'].includes(options.format)) {
+  if (options.format !== undefined && !isContentFormat(options.format)) {
     throw new TypeError('Unsupported content format.');
   }
   return Object.freeze({
@@ -41,4 +41,13 @@ export function createContent(
       ? {}
       : { originalSource: options.originalSource }),
   });
+}
+
+export function isContentFormat(value: unknown): value is ContentFormat {
+  return (
+    typeof value === 'string' &&
+    !!value.trim() &&
+    value === value.trim() &&
+    value !== 'auto'
+  );
 }

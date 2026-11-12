@@ -62,7 +62,7 @@ export type {
   HighlightOptions,
 } from './editing/highlight-model';
 
-export type { TexionContent, TextFormat, BuiltinFormat } from './content/types';
+export type { TexionContent, TextFormat, BuiltinFormat, ContentFormat } from './content/types';
 
 export { createContent, isTexionContent } from './content/schema';
 
@@ -85,3 +85,13 @@ export {
   sourceWarnings,
 } from './ingestion/text-format';
 export { tokenizeDataSource } from './editing/data-tokens';
+
+export type { TexionMessage, TexionAttachmentReference } from './content/types';
+export {
+  createMessage,
+  createMessageFromDocuments,
+  isTexionMessage,
+  isAttachmentReference,
+  serializeMessage,
+  deserializeMessage,
+} from './content/message';

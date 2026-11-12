@@ -4,7 +4,7 @@ import type {
   ControllerOptions,
   DocumentInput,
   TexionDocument,
-  TextFormat,
+  ContentFormat,
 } from '@texion/core';
 import { useDocument } from '../hooks/useDocument';
 import { defaultRenderer } from '../renderers/registry';
@@ -14,7 +14,7 @@ export interface DocumentViewerProps {
   readonly document?: TexionDocument;
   readonly input?: DocumentInput;
   readonly content?: string;
-  readonly format?: TextFormat;
+  readonly format?: ContentFormat;
   readonly options?: ControllerOptions;
   readonly className?: string;
   readonly renderer?: ComponentType<PreviewRendererProps>;

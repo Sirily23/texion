@@ -5,7 +5,14 @@ export function serializeContent(content: TexionContent): string {
   if (!isTexionContent(content)) {
     throw new TypeError('Unsupported Texion content.');
   }
-  return JSON.stringify(content);
+  return JSON.stringify(
+    createContent(content.source, {
+      format: content.format,
+      ...(content.originalSource === undefined
+        ? {}
+        : { originalSource: content.originalSource }),
+    }),
+  );
 }
 
 export function deserializeContent(serialized: string): TexionContent {

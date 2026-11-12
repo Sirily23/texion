@@ -115,6 +115,7 @@ export function TexionInput({
       <AttachmentList
         documents={texion.documents}
         onRemove={texion.removeDocument}
+        onCancel={texion.cancelDocument}
         onPreview={preview ? setPreviewId : undefined}
       />
       {showImagePreviews &&

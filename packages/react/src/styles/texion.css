@@ -229,3 +229,15 @@
   font-size: 0.8rem;
   margin-block-start: 0.5rem;
 }
+
+.texion-document-progress {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+.texion-document-progress progress {
+  width: 10rem;
+  max-width: 100%;
+  accent-color: var(--texion-accent);
+}

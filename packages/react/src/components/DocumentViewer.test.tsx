@@ -50,3 +50,12 @@ it('shows warnings, errors and preview limits without losing source', async () =
     expect(screen.getByRole('alert').textContent).toContain('empty'),
   );
 });
+
+it('keeps Blob inputs intact when an explicit saved format is supplied', async () => {
+  const source = 'Original saved file';
+  const file = new File([source], 'saved.txt', { type: 'text/plain' });
+  file.arrayBuffer = async () => new TextEncoder().encode(source).buffer;
+  Object.defineProperty(file, 'text', { value: async () => source });
+  render(<DocumentViewer input={file} format="text" />);
+  await screen.findByText(source);
+});

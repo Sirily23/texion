@@ -39,7 +39,7 @@ export function TexionInput({
   useEffect(() => setEditorMode(mode), [mode]);
   const texion = useTexion({
     ...options,
-    format: options.format ?? (editorMode === 'rich' ? 'markdown' : 'auto'),
+    format: options.format ?? options.defaultContent?.format ?? (editorMode === 'rich' ? 'markdown' : 'auto'),
     highlight: editorMode === 'source' && !!options.highlight,
   });
   const canUseRich = texion.format === 'markdown';
@@ -74,7 +74,7 @@ export function TexionInput({
             {...texion.getRichEditorProps({
               formats:
                 options.format && options.format !== 'auto'
-                  ? [options.format]
+                  ? [options.format].filter(isTextFormat)
                   : (options.formats?.filter(isTextFormat) ?? [
                       'markdown',
                       'json',

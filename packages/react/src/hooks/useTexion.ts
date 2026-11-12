@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
-import { createContent, isTextFormat } from '@texion/core';
+import {
+  createContent,
+  isTextFormat,
+  isTexionContent,
+  createRegistry,
+} from '@texion/core';
 import type {
   TexionContent,
   TexionDocument,
-  TextFormat,
-  BuiltinFormat,
+  ContentFormat,
 } from '@texion/core';
 import type { RichMarkdownEditorProps } from '../editors/rich/RichMarkdownEditor';
 import { useAttachmentController } from '../controllers/attachments';
@@ -22,8 +26,10 @@ export interface Submission {
 
 export interface UseTexionOptions extends AttachmentOptions {
   readonly defaultValue?: string;
-  readonly format?: TextFormat | 'auto';
-  readonly formats?: readonly BuiltinFormat[];
+  /** Portable text content used to initialize an editor. Remount to reopen another draft. */
+  readonly defaultContent?: TexionContent;
+  readonly format?: ContentFormat | 'auto';
+  readonly formats?: readonly ContentFormat[];
   readonly highlight?: boolean;
   readonly maxHighlightCharacters?: number;
   readonly submitOnEnter?: boolean;
@@ -31,16 +37,21 @@ export interface UseTexionOptions extends AttachmentOptions {
 }
 
 export function useTexion(options: UseTexionOptions = {}) {
+  const [adapters] = useState(() => createRegistry(options.adapters));
   if (
     options.formats &&
     (!options.formats.length ||
       options.formats.some(
-        (format) => !['markdown', 'json', 'csv', 'image'].includes(format),
+        (format) => !adapters.some((adapter) => adapter.format === format),
       ))
   ) {
-    throw new RangeError(
-      'Choose at least one supported format: markdown, json, csv, or image.',
-    );
+    throw new RangeError('Choose at least one registered format.');
+  }
+  if (
+    options.defaultContent !== undefined &&
+    !isTexionContent(options.defaultContent)
+  ) {
+    throw new TypeError('Invalid initial Texion content.');
   }
   const attachments = useAttachmentController(
     options.formats && !options.acceptedFormats
@@ -50,16 +61,29 @@ export function useTexion(options: UseTexionOptions = {}) {
   const { controller, snapshot } = attachments;
   const submitting = useRef(false);
   const richComposing = useRef(false);
-  const originalSource = useRef(options.defaultValue);
+  const originalSource = useRef(
+    options.defaultContent
+      ? options.defaultContent.originalSource
+      : options.defaultValue,
+  );
   const [isSubmitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>();
-  const allowedTextFormats = options.formats?.filter(isTextFormat);
+  const preferredFormats = options.formats ?? [
+    'markdown',
+    ...adapters.map((adapter) => adapter.format),
+  ];
+  const allowedSourceFormats = [...new Set(preferredFormats)].filter((format) =>
+    adapters.some(
+      (adapter) => adapter.kind !== 'binary' && adapter.format === format,
+    ),
+  );
+  const allowedTextFormats = allowedSourceFormats.filter(isTextFormat);
+  const defaultValue = options.defaultContent?.source ?? options.defaultValue;
   const input = useSourceInput({
-    language: options.format ?? 'auto',
-    ...(allowedTextFormats ? { allowedFormats: allowedTextFormats } : {}),
-    ...(options.defaultValue === undefined
-      ? {}
-      : { defaultValue: options.defaultValue }),
+    language: options.format ?? options.defaultContent?.format ?? 'auto',
+    allowedFormats: allowedSourceFormats,
+    adapters,
+    ...(defaultValue === undefined ? {} : { defaultValue }),
     highlight: options.highlight ?? false,
     ...(options.maxHighlightCharacters === undefined
       ? {}
@@ -167,12 +191,14 @@ export function useTexion(options: UseTexionOptions = {}) {
     props: Partial<RichMarkdownEditorProps> = {},
   ): RichMarkdownEditorProps {
     if (input.format !== 'markdown') {
-      throw new Error('JSON and CSV use source editing, not rich conversion.');
+      throw new Error(
+        'Plain text, JSON and CSV use source editing; only Markdown supports rich conversion.',
+      );
     }
     return {
       formats:
         options.format && options.format !== 'auto'
-          ? [options.format]
+          ? [options.format].filter(isTextFormat)
           : (allowedTextFormats ?? ['markdown', 'json', 'csv']),
       ...props,
       value: input.value,

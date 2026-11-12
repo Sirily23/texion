@@ -5,16 +5,18 @@ import {
   defaultHighlightLimits,
   sourceWarnings,
   detectTextFormat,
+  isTextFormat,
 } from '@texion/core';
-import type { TextFormat } from '@texion/core';
+import type { ContentFormat, FormatAdapter } from '@texion/core';
 import { shouldSubmit } from '../controllers/text';
 
 export interface UseSourceInputOptions {
   readonly value?: string;
   readonly defaultValue?: string;
   readonly onChange?: (value: string) => void;
-  readonly language?: TextFormat | 'auto';
-  readonly allowedFormats?: readonly TextFormat[];
+  readonly language?: ContentFormat | 'auto';
+  readonly allowedFormats?: readonly ContentFormat[];
+  readonly adapters?: readonly FormatAdapter[];
   readonly highlight?: boolean;
   readonly maxHighlightCharacters?: number;
   readonly submitOnEnter?: boolean;
@@ -50,7 +52,11 @@ export function useSourceInput(options: UseSourceInputOptions = {}) {
   const language = options.language ?? 'markdown';
   const getFormat = () =>
     language === 'auto'
-      ? detectTextFormat(valueRef.current, options.allowedFormats)
+      ? detectTextFormat(
+          valueRef.current,
+          options.allowedFormats,
+          options.adapters ?? [],
+        )
       : language;
   const format = getFormat();
   const warnings = useMemo(
@@ -62,7 +68,7 @@ export function useSourceInput(options: UseSourceInputOptions = {}) {
       createHighlightModel(value, {
         enabled: highlight,
         maxCharacters,
-        format,
+        format: isTextFormat(format) ? format : 'text',
       }),
     [value, highlight, maxCharacters, format],
   );

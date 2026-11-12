@@ -20,6 +20,8 @@ import { defaultPasteThreshold } from './presentation';
 
 export interface AttachmentOptions extends ControllerOptions {
   readonly attachments?: boolean;
+  /** Inputs resolved by the host when reopening a saved message. Read on mount. */
+  readonly initialAttachments?: readonly DocumentInput[];
   readonly pasteAsAttachment?: boolean;
   readonly pasteAttachmentThreshold?: number;
 }
@@ -42,7 +44,11 @@ export function useAttachmentController(options: AttachmentOptions) {
   const dragDepth = useRef(0);
   const [isDragging, setDragging] = useState(false);
   const [inputError, setInputError] = useState<string>();
-  useEffect(() => () => controller.clear(), [controller]);
+  const initialAttachments = useRef([...(options.initialAttachments ?? [])]);
+  useEffect(() => {
+    initialAttachments.current.forEach(addDocument);
+    return () => controller.clear();
+  }, [controller]);
   const enabled = options.attachments !== false;
 
   function addDocument(input: DocumentInput) {
@@ -124,7 +130,13 @@ export function useAttachmentController(options: AttachmentOptions) {
       ref: inputRef,
       type: 'file' as const,
       multiple: true,
-      accept: props.accept ?? acceptForFormats(options.acceptedFormats),
+      accept:
+        props.accept ??
+        acceptForFormats(
+          options.acceptedFormats ??
+            options.adapters?.map((adapter) => adapter.format),
+          options.adapters,
+        ),
       disabled: !enabled || props.disabled,
       onChange(event: ChangeEvent<HTMLInputElement>) {
         props.onChange?.(event);

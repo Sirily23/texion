@@ -36,4 +36,7 @@ export type { RichMarkdownEditorProps } from './editors/rich/RichMarkdownEditor'
 export { useSourceInput } from './hooks/useSourceInput';
 export type { UseSourceInputOptions } from './hooks/useSourceInput';
 
-export type { PreviewRendererProps } from './renderers/types';
+export type { PreviewRendererProps, RendererRegistry } from './renderers/types';
+
+export { useTexionAttachments } from './hooks/useTexionAttachments';
+export type { UseTexionAttachmentsOptions } from './hooks/useTexionAttachments';

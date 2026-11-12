@@ -8,7 +8,10 @@ import type {
 } from '@texion/core';
 import { useDocument } from '../hooks/useDocument';
 import { defaultRenderer } from '../renderers/registry';
-import type { PreviewRendererProps } from '../renderers/types';
+import type {
+  PreviewRendererProps,
+  RendererRegistry,
+} from '../renderers/types';
 
 export interface DocumentViewerProps {
   readonly document?: TexionDocument;
@@ -18,6 +21,7 @@ export interface DocumentViewerProps {
   readonly options?: ControllerOptions;
   readonly className?: string;
   readonly renderer?: ComponentType<PreviewRendererProps>;
+  readonly renderers?: RendererRegistry;
 }
 
 export function DocumentViewer({
@@ -28,20 +32,30 @@ export function DocumentViewer({
   options,
   className,
   renderer,
+  renderers,
 }: DocumentViewerProps) {
   const documentInput = useMemo(() => {
     const value = input ?? content;
     if (typeof value === 'string' && format) {
       return { text: value, format };
     }
-    if (value && typeof value === 'object' && 'text' in value && format) {
+    if (
+      value &&
+      typeof value === 'object' &&
+      'text' in value &&
+      typeof value.text === 'string' &&
+      format
+    ) {
       return { ...value, format };
     }
     return value;
   }, [input, content, format]);
   const processed = useDocument(supplied ? undefined : documentInput, options);
   const document = supplied ?? processed;
-  const Renderer = renderer ?? defaultRenderer(document?.format);
+  const Renderer =
+    renderer ??
+    (document ? renderers?.[document.format] : undefined) ??
+    defaultRenderer(document?.format);
   const preview = useMemo(
     () => (document?.status === 'ready' ? document.getPreview?.() : undefined),
     [document],

@@ -17,7 +17,9 @@ export type HighlightKind =
   | 'number'
   | 'boolean'
   | 'null'
-  | 'punctuation';
+  | 'punctuation'
+  | 'keyword'
+  | 'comment';
 
 /** Half-open offsets measured in JavaScript UTF-16 code units, including Markdown markers. */
 export interface HighlightToken {

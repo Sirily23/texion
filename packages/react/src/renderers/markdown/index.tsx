@@ -1,5 +1,6 @@
 import type { PreviewRendererProps } from '../types';
 import { Fragment, createElement } from 'react';
+import { CodeBlock } from '../../components/CodeBlock';
 import type { ReactNode } from 'react';
 import { safeUrl } from '@texion/core';
 import type { DocumentPreview, PreviewNode } from '@texion/core';
@@ -27,9 +28,11 @@ function render(node: PreviewNode, index: number): ReactNode {
       return <blockquote key={index}>{children}</blockquote>;
     case 'code':
       return (
-        <pre key={index}>
-          <code>{node.value}</code>
-        </pre>
+        <CodeBlock
+          key={index}
+          source={node.value ?? ''}
+          {...(node.language ? { language: node.language } : {})}
+        />
       );
     case 'inlineCode':
       return <code key={index}>{node.value}</code>;

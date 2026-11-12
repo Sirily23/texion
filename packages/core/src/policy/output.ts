@@ -1,6 +1,7 @@
 export interface PreviewNode {
   readonly type: string;
   readonly value?: string;
+  readonly language?: string;
   readonly children?: readonly PreviewNode[];
   readonly url?: string;
   readonly depth?: number;

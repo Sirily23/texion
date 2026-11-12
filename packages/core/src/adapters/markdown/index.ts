@@ -81,6 +81,7 @@ export function tokenizeMarkdown(
     const output: {
       type: string;
       value?: string;
+      language?: string;
       children?: PreviewNode[];
       depth?: number;
       ordered?: boolean;
@@ -88,6 +89,9 @@ export function tokenizeMarkdown(
       checked?: boolean;
     } = { type: node.type };
 
+    if (node.type === 'code' && node.lang) {
+      output.language = node.lang;
+    }
     if (node.value !== undefined) {
       output.value = node.value;
     }

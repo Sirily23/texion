@@ -2,7 +2,9 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import type { HighlightKind, HighlightModel } from '@texion/core';
 
-const colors: Record<HighlightKind, string> = {
+export const highlightColors: Record<HighlightKind, string> = {
+  keyword: 'var(--texion-highlight-keyword, #1d4ed8)',
+  comment: 'var(--texion-highlight-comment, #64748b)',
   property: 'var(--texion-highlight-property, #7e22ce)',
   string: 'var(--texion-highlight-string, #047857)',
   number: 'var(--texion-highlight-number, #b45309)',
@@ -36,7 +38,9 @@ export const HighlightOverlay = forwardRef<
         <span
           key={segment.start}
           data-highlight-kind={segment.kind}
-          style={segment.kind ? { color: colors[segment.kind] } : undefined}
+          style={
+            segment.kind ? { color: highlightColors[segment.kind] } : undefined
+          }
         >
           {model.text.slice(segment.start, segment.end)}
         </span>

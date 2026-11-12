@@ -103,6 +103,7 @@ export {
   serializeMessage,
   deserializeMessage,
 } from './content/message';
+export { inspectCodeBlock } from './editing/code-block';
 
 export { createPdfAdapter } from './adapters/pdf';
 export type { PdfAdapterOptions } from './adapters/pdf';

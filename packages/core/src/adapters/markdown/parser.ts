@@ -6,6 +6,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 export interface MarkdownSyntaxNode {
   type: string;
   value?: string;
+  lang?: string;
   children?: MarkdownSyntaxNode[];
   url?: string;
   identifier?: string;

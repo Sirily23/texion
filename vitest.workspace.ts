@@ -11,6 +11,14 @@ const alias = {
 export default defineWorkspace([
   {
     resolve: { alias },
+    test: {
+      name: 'ocr',
+      environment: 'node',
+      include: ['packages/ocr-*/src/**/*.test.ts'],
+    },
+  },
+  {
+    resolve: { alias },
     esbuild: { jsx: 'automatic' },
     test: {
       name: 'core',

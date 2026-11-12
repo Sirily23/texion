@@ -9,7 +9,8 @@
     "dev": "vite --host 127.0.0.1",
     "test:browser": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "benchmark:ocr": "node scripts/benchmark-ocr.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

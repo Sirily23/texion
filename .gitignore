@@ -31,3 +31,23 @@ blob-report/
 Thumbs.db
 *.swp
 *.swo
+
+# Documentation site
+.next/
+.source/
+out/
+examples/docs/content/docs/guides/
+.sites-runtime/
+
+# Locally copied, optional OCR worker/model assets for the docs demo
+examples/docs/public/texion-ocr/
+examples/docs/public/samples/ocr-scanned.pdf
+
+# Local planning, agent guidance and hosting settings
+.agents/
+.openai/
+docs/launch-copy.md
+docs/ocr-implementation-plan.md
+docs/texion-assessment.md
+examples/docs/AGENTS.md
+examples/docs/next-env.d.ts

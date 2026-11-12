@@ -1,4 +1,7 @@
 export interface Limits {
+  readonly maxExtractedCharacters: number;
+  readonly maxDocumentPages: number;
+  readonly maxArchiveBytes: number;
   readonly maxImagePixels: number;
   readonly maxFiles: number;
   readonly maxFileSize: number;
@@ -8,6 +11,9 @@ export interface Limits {
 }
 
 export const defaultLimits: Limits = Object.freeze({
+  maxExtractedCharacters: 1_000_000,
+  maxDocumentPages: 200,
+  maxArchiveBytes: 20_000_000,
   maxImagePixels: 40_000_000,
   maxFiles: 5,
   maxFileSize: 2_000_000,

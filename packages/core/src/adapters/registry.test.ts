@@ -72,3 +72,39 @@ it('supports trusted binary adapters on the same lifecycle and catches preview f
   expect(document.getPreview!().warnings[0]?.code).toBe('parse-failed');
   expect(document.getPreview!()).toBe(document.getPreview!());
 });
+
+it('does not restore a removed document when asynchronous extraction completes', async () => {
+  const { createController } = await import('../lifecycle/controller');
+  let finish!: (result: { raw: string }) => void;
+  let start!: () => void;
+  const started = new Promise<void>((resolve) => {
+    start = resolve;
+  });
+  const controller = createController({
+    adapters: [
+      {
+        kind: 'binary',
+        format: 'extracted',
+        extensions: ['extracted'],
+        mimeTypes: [],
+        detectBytes: () => false,
+        inspect: () => ({}),
+        extract: async () => {
+          start();
+          return new Promise((resolve) => {
+            finish = resolve;
+          });
+        },
+        parse: () => ({ nodes: [], truncated: false, warnings: [] }),
+      },
+    ],
+  });
+  const id = controller.add(new File(['bytes'], 'test.extracted'));
+  const pending = controller.whenSettled(id);
+  await started;
+  controller.remove(id);
+  finish({ raw: 'Late text' });
+  expect(await pending).toBeUndefined();
+  await Promise.resolve();
+  expect(controller.getSnapshot().documents).toEqual([]);
+});

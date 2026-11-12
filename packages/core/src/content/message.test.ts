@@ -59,7 +59,7 @@ it('rejects duplicate IDs and unsupported message versions', () => {
 
 it('maps ready documents through host storage without performing uploads itself', async () => {
   const document = await processDocument(
-    new File(['original'], 'note.md', { type: 'text/markdown' }),
+    new File(['original'], 'note.txt', { type: 'text/plain' }),
   );
   const save = vi.fn(async () => 'host/note');
   const message = await createMessageFromDocuments(
@@ -70,8 +70,8 @@ it('maps ready documents through host storage without performing uploads itself'
   expect(save).toHaveBeenCalledWith(document);
   expect(message.attachments[0]).toMatchObject({
     reference: 'host/note',
-    name: 'note.md',
-    mimeType: 'text/markdown',
+    name: 'note.txt',
+    mimeType: 'text/plain',
   });
   const failed = { ...document, status: 'error' as const };
   save.mockClear();

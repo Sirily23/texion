@@ -3,6 +3,9 @@ import { markdownAdapter } from './markdown';
 import { jsonAdapter } from './json';
 import { csvAdapter } from './csv';
 import { imageAdapter } from './image';
+import { textAdapter } from './text';
+import { pdfAdapter } from './pdf';
+import { docxAdapter } from './docx';
 
 export function createRegistry(
   adapters: readonly FormatAdapter[] = [
@@ -10,6 +13,9 @@ export function createRegistry(
     markdownAdapter,
     csvAdapter,
     imageAdapter,
+    pdfAdapter,
+    docxAdapter,
+    textAdapter,
   ],
   acceptedFormats?: readonly string[],
 ): readonly FormatAdapter[] {

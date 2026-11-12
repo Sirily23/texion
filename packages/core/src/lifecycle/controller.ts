@@ -140,6 +140,26 @@ export function createController(options: ControllerOptions = {}) {
           adapters,
           limits,
           operation.abort.signal,
+          {
+            document: { id, name: base.name },
+            reportProgress(progress) {
+              if (!isCurrent(jobs.get(id)?.operation, operation)) return;
+              if (
+                !Number.isSafeInteger(progress.done) ||
+                !Number.isSafeInteger(progress.total) ||
+                progress.done < 0 ||
+                progress.total < progress.done
+              )
+                return;
+              const current = documents.get(id);
+              if (!current || current.status !== 'processing') return;
+              documents.set(
+                id,
+                freezeDocument({ ...current, progress: { ...progress } }),
+              );
+              publish();
+            },
+          },
         );
 
         if (!isCurrent(jobs.get(id)?.operation, operation)) {

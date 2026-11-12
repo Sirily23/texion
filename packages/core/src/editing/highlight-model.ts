@@ -50,7 +50,7 @@ export function createHighlightModel(
     });
   }
 
-  if (enabled === false) {
+  if (enabled === false || format === 'text') {
     return plain('disabled');
   }
   if (text.length > limits.maxCharacters) {

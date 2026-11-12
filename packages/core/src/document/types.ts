@@ -1,3 +1,8 @@
+import type {
+  DocumentPage,
+  DocumentProgress,
+  OcrSummary,
+} from '../ocr/contract';
 import type { DocumentError, DocumentWarning } from '../errors/codes';
 import type { PreviewNode } from '../policy/output';
 
@@ -34,7 +39,11 @@ export interface TexionDocument {
   readonly source: DocumentSource;
   readonly status: DocumentStatus;
   readonly size: number;
+  /** Decoded text source, or extracted PDF/DOCX text. Absent for image attachments. */
   readonly raw?: string;
+  readonly pages?: readonly DocumentPage[];
+  readonly ocr?: OcrSummary;
+  readonly progress?: DocumentProgress;
   readonly file?: File;
   readonly blob?: Blob;
   readonly metadata: Readonly<Record<string, unknown>>;

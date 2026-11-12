@@ -1,3 +1,8 @@
+import type {
+  DocumentPage,
+  DocumentProgress,
+  OcrSummary,
+} from '../ocr/contract';
 import type { DocumentPreview } from '../document/types';
 import type { DocumentWarning } from '../errors/codes';
 import type { Limits } from '../policy/limits';
@@ -5,6 +10,15 @@ import type { Limits } from '../policy/limits';
 export interface AdapterInspection {
   readonly metadata?: Readonly<Record<string, unknown>>;
   readonly warnings?: readonly DocumentWarning[];
+}
+export interface BinaryExtractionResult extends AdapterInspection {
+  readonly raw: string;
+  readonly pages?: readonly DocumentPage[];
+  readonly ocr?: OcrSummary;
+}
+export interface ExtractionContext {
+  readonly document?: { readonly id: string; readonly name: string };
+  readonly reportProgress: (progress: DocumentProgress) => void;
 }
 interface AdapterIdentity {
   readonly format: string;
@@ -24,6 +38,13 @@ export interface TextFormatAdapter extends AdapterIdentity {
 }
 export interface BinaryFormatAdapter extends AdapterIdentity {
   readonly kind: 'binary';
+  /** Extract document text during processing; heavy parsers can load on demand. */
+  readonly extract?: (
+    bytes: Uint8Array,
+    limits: Limits,
+    signal: AbortSignal,
+    context?: ExtractionContext,
+  ) => Promise<BinaryExtractionResult>;
   readonly detectBytes: (bytes: Uint8Array) => boolean;
   readonly inspect: (
     bytes: Uint8Array,
@@ -36,5 +57,5 @@ export interface BinaryFormatAdapter extends AdapterIdentity {
     metadata: Readonly<Record<string, unknown>>,
   ) => DocumentPreview;
 }
-/** Third-party adapters are trusted code. Parsing stays synchronous and lazy. */
+/** Third-party adapters are trusted code. Preview generation stays synchronous and lazy; binary text extraction can be async. */
 export type FormatAdapter = TextFormatAdapter | BinaryFormatAdapter;

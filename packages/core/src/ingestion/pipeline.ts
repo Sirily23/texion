@@ -1,32 +1,52 @@
 import type { DocumentInput, DocumentPreview } from '../document/types';
-import type { BinaryFormatAdapter, FormatAdapter } from '../adapters/contract';
+import type {
+  BinaryFormatAdapter,
+  FormatAdapter,
+  ExtractionContext,
+} from '../adapters/contract';
 import type { Limits } from '../policy/limits';
 import { isBlob, inputName } from '../policy/duplicates';
 import { IngestionError } from '../errors/codes';
 import { deepFreeze } from '../lifecycle/snapshot';
 import { abortError } from '../lifecycle/cancellation';
 import { decode } from './decode';
+import { plainTextPreview } from '../adapters/text';
 import { identify, identifyDeclared } from './identify';
 import { validateSize, validateText } from './validate';
 
-function binaryResult(
+async function binaryResult(
   adapter: BinaryFormatAdapter,
   bytes: Uint8Array,
   limits: Limits,
   source: { name: string; mime: string },
+  signal: AbortSignal,
+  context?: ExtractionContext,
 ) {
   const inspection = adapter.inspect(bytes, limits, source);
-  const metadata = inspection.metadata ?? {};
+  const extracted = await adapter.extract?.(bytes, limits, signal, context);
+  if (signal.aborted) throw abortError();
+  const metadata = { ...inspection.metadata, ...extracted?.metadata };
   let preview: DocumentPreview | undefined;
   return {
     size: bytes.byteLength,
     format: adapter.format,
     metadata,
-    warnings: inspection.warnings ?? [],
+    warnings: [...(inspection.warnings ?? []), ...(extracted?.warnings ?? [])],
+    ...(extracted
+      ? {
+          raw: extracted.raw,
+          ...(extracted.pages ? { pages: extracted.pages } : {}),
+          ...(extracted.ocr ? { ocr: extracted.ocr } : {}),
+        }
+      : {}),
     getPreview(): DocumentPreview {
       if (!preview) {
         try {
-          preview = deepFreeze(adapter.parse(bytes, limits, metadata));
+          preview = deepFreeze(
+            extracted
+              ? plainTextPreview(extracted.raw, limits)
+              : adapter.parse(bytes, limits, metadata),
+          );
         } catch {
           preview = deepFreeze({
             nodes: [],
@@ -50,6 +70,7 @@ export async function runPipeline(
   adapters: readonly FormatAdapter[],
   limits: Limits,
   signal: AbortSignal,
+  context?: ExtractionContext,
 ) {
   const checkCancelled = () => {
     if (signal.aborted) {
@@ -74,13 +95,24 @@ export async function runPipeline(
     let declared = identifyDeclared(name, mime, adapters);
     const genericMime =
       !mime || mime === 'application/octet-stream' || mime === 'text/plain';
-    if (!declared && !name.includes('.') && genericMime) {
+    if (
+      (!declared || declared.format === 'text') &&
+      !name.includes('.') &&
+      genericMime
+    ) {
       declared = adapters.find(
         (adapter) => adapter.kind === 'binary' && adapter.detectBytes(bytes),
       );
     }
     if (declared?.kind === 'binary') {
-      return binaryResult(declared, bytes, limits, { name, mime });
+      return binaryResult(
+        declared,
+        bytes,
+        limits,
+        { name, mime },
+        signal,
+        context,
+      );
     }
     const decoded = decode(bytes);
     text = decoded.text;

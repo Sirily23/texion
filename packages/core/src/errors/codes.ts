@@ -1,3 +1,10 @@
+export type OcrErrorCode =
+  | 'ocr-unavailable'
+  | 'ocr-consent-denied'
+  | 'ocr-timeout'
+  | 'ocr-limit-exceeded'
+  | 'ocr-page-failed';
+
 export type ErrorCode =
   | 'unsupported'
   | 'too-large'
@@ -5,7 +12,9 @@ export type ErrorCode =
   | 'empty'
   | 'binary'
   | 'read-failed'
-  | 'invalid-image';
+  | 'invalid-image'
+  | 'invalid-document'
+  | OcrErrorCode;
 
 export interface DocumentError {
   readonly code: ErrorCode;
@@ -14,12 +23,14 @@ export interface DocumentError {
 
 export interface DocumentWarning {
   readonly code:
+    | 'no-text'
     | 'invalid-utf8'
     | 'parse-failed'
     | 'truncated'
     | 'invalid-json'
     | 'invalid-csv'
-    | 'too-complex';
+    | 'too-complex'
+    | OcrErrorCode;
   readonly message: string;
 }
 

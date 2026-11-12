@@ -62,7 +62,12 @@ export type {
   HighlightOptions,
 } from './editing/highlight-model';
 
-export type { TexionContent, TextFormat, BuiltinFormat, ContentFormat } from './content/types';
+export type {
+  TexionContent,
+  TextFormat,
+  BuiltinFormat,
+  ContentFormat,
+} from './content/types';
 
 export { createContent, isTexionContent } from './content/schema';
 
@@ -78,6 +83,9 @@ export { inspectMarkdownSource } from './content/markdown-features';
 export { jsonAdapter } from './adapters/json';
 export { csvAdapter } from './adapters/csv';
 export { imageAdapter } from './adapters/image';
+export { textAdapter } from './adapters/text';
+export { pdfAdapter } from './adapters/pdf';
+export { docxAdapter } from './adapters/docx';
 
 export {
   detectTextFormat,
@@ -95,3 +103,31 @@ export {
   serializeMessage,
   deserializeMessage,
 } from './content/message';
+
+export { createPdfAdapter } from './adapters/pdf';
+export type { PdfAdapterOptions } from './adapters/pdf';
+export type { PdfOcrRenderer, PdfCanvasImport } from './adapters/pdf/render';
+export { classifyPdfPage } from './ocr/classifier';
+export { recognizePdfPages } from './ocr/orchestrator';
+export { createOcrScheduler } from './ocr/scheduler';
+export type { OcrScheduler } from './ocr/scheduler';
+export type {
+  BinaryExtractionResult,
+  ExtractionContext,
+} from './adapters/contract';
+export type {
+  DocumentBlock,
+  DocumentPage,
+  DocumentProgress,
+  OcrSummary,
+  OcrEngine,
+  OcrSession,
+  OcrImage,
+  OcrPageInput,
+  OcrPageResult,
+  OcrOptions,
+  OcrApproval,
+  OcrRenderRequest,
+  OcrRenderer,
+  OcrOutput,
+} from './ocr/contract';

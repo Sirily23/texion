@@ -1,0 +1,3 @@
+# Preserve document fixtures as binary files, including PDF cross-reference data.
+*.pdf binary
+*.docx binary

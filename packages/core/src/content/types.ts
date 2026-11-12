@@ -1,6 +1,6 @@
-export type TextFormat = 'markdown' | 'json' | 'csv';
+export type TextFormat = 'markdown' | 'json' | 'csv' | 'text';
 export type ContentFormat = TextFormat | (string & {});
-export type BuiltinFormat = TextFormat | 'image';
+export type BuiltinFormat = TextFormat | 'image' | 'pdf' | 'docx';
 
 /** Framework-independent, JSON-serializable content exchanged by editors and viewers. */
 export interface TexionContent {

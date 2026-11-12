@@ -1,0 +1,34 @@
+{
+  "name": "@texion/docs",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node scripts/sync-docs.mjs && node scripts/sync-ocr-assets.mjs && next dev --hostname 127.0.0.1 --port 3000",
+    "build": "node scripts/sync-docs.mjs && node scripts/sync-ocr-assets.mjs && next build --webpack",
+    "typecheck": "node scripts/sync-docs.mjs && fumadocs-mdx && tsc --noEmit"
+  },
+  "dependencies": {
+    "@texion/core": "workspace:*",
+    "@texion/react": "workspace:*",
+    "fumadocs-core": "16.18.4",
+    "fumadocs-ui": "16.18.4",
+    "fumadocs-mdx": "15.5.3",
+    "next": "^16.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "lucide-react": "latest",
+    "@texion/ocr-tesseract": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "@types/mdx": "^2.0.13",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "pnpm@10.11.0"
+}

@@ -1,0 +1,45 @@
+---
+title: Development
+description: Run the library examples and this documentation site locally.
+---
+
+## Clone and install
+
+```sh
+git clone https://github.com/Sirily23/texion.git
+cd texion
+pnpm install
+pnpm build
+```
+
+The library packages support Node 20.19 or newer. This Fumadocs application uses Node 22 or newer.
+
+## Run documentation
+
+```sh
+pnpm docs:dev
+```
+
+Open `http://localhost:3000`. The playground uses the workspace library packages. Rebuild the library packages after changing their source.
+
+## Edit guides
+
+The Markdown files in the repository's `docs/` directory are the source for the guide pages. The documentation scripts copy them into generated MDX pages before development, type checking, and builds. Restart the dev command after changing these guides.
+
+Edit the introduction, API reference, recipes, and this page in `examples/docs/content/docs/`.
+
+## Build a static site
+
+```sh
+pnpm docs:build
+```
+
+The site is exported to `examples/docs/out/`. It includes the pages, browser-side search index, and interactive playground. Serve that directory using any static host; a Node server is not required in production.
+
+## Library checks
+
+```sh
+pnpm typecheck
+pnpm test
+pnpm test:browser
+```

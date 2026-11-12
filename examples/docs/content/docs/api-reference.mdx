@@ -1,0 +1,124 @@
+---
+title: API reference
+description: The primary components, hooks, and processing APIs.
+---
+
+## TexionInput
+
+A composed input with editing, attachments, previews, and submission handling.
+
+```tsx
+<TexionInput
+  format="auto"
+  mode="source"
+  highlight
+  preview
+  previewImages
+  previewPosition="above"
+  submitOnEnter
+  onSubmit={handleSubmit}
+/>
+```
+
+| Option            | Default              | Behavior                                                              |
+| ----------------- | -------------------- | --------------------------------------------------------------------- |
+| `format`          | `auto`               | `markdown`, `text`, `json`, `csv`, or automatic source detection.     |
+| `mode`            | `source`             | Native source editing, or `rich` for Markdown.                        |
+| `formats`         | All built-in formats | Restricts text and attachment formats.                                |
+| `attachments`     | `true`               | Enables file selection, paste, and drop.                              |
+| `preview`         | `false`              | Enables message and individual attachment preview controls.           |
+| `previewImages`   | `false`              | Initially shows local image previews.                                 |
+| `previewPosition` | `above`              | Initial preview and attachment position: `above` or `below`.          |
+| `highlight`       | `false`              | Enables source syntax highlighting.                                   |
+| `submitOnEnter`   | `true`               | Enter submits; Shift + Enter inserts a newline. Use `false` in forms. |
+| `label`           | `Message`            | Accessible editor label.                                              |
+| `submitLabel`     | `Submit`             | Submission button text.                                               |
+
+`onSubmit` receives `content`, `attachments`, `text`, `documents`, and an optional `textDocument`. `documents` and `attachments` refer to the attachment collection; `content` is the serializable source representation.
+
+## useTexion
+
+Build a custom interface using the same behavior as `TexionInput`.
+
+```tsx
+const texion = useTexion({ onSubmit: handleSubmit, submitOnEnter: false });
+```
+
+| Member                                      | Purpose                                                                 |
+| ------------------------------------------- | ----------------------------------------------------------------------- |
+| `getRootProps()`                            | Drag and drop handlers for your root element.                           |
+| `getTextareaProps()`                        | Native input behavior, composition handling, and text state.            |
+| `getInputProps()`                           | Props for a file input, including accepted formats.                     |
+| `openPicker()`                              | Opens the connected file input.                                         |
+| `documents`                                 | Current attachment snapshots.                                           |
+| `addDocument(input)`                        | Adds a supported file, blob, or text input.                             |
+| `removeDocument(id)`                        | Removes an attachment and invalidates pending work.                     |
+| `submit()`                                  | Processes captured input and invokes the submission handler when ready. |
+| `clear()`                                   | Clears the draft and attachments.                                       |
+| `isSubmitting`, `submitError`, `inputError` | Submission and intake feedback.                                         |
+
+Limits, adapters, and accepted formats are fixed when the controller mounts. Remount to change them.
+
+## Viewers and source inputs
+
+- **`DocumentViewer`** accepts `input` for processing, `document` to reuse a snapshot, or `content` and `format` for text previews.
+- **`TexionViewer`** renders a serialized `TexionContent` object.
+- **`HighlightedTextarea`** adds source highlighting to a native textarea.
+- **`AttachmentList`** renders attachment state, removal controls, and optional preview actions.
+- **`useDocument`** processes one input through the shared lifecycle.
+- **`useSourceInput`** provides source input state, highlighting, selection, and native prop getters.
+
+## processDocument
+
+```ts
+import { processDocument } from '@texion/core';
+
+const document = await processDocument(file, { maxFileSize: 2_000_000 });
+if (document.status === 'ready') {
+  console.log(document.format, document.raw, document.getPreview?.());
+} else {
+  console.error(document.error);
+}
+```
+
+Text documents preserve decoded source in `raw`. PDF and DOCX expose extracted text in `raw`. Images keep their original bytes without a `raw` string. Original file inputs remain available as `file` and `blob`.
+
+## createController
+
+Use `createController(options)` when processing a collection of documents. Subscribe with `subscribe(listener)`, read `getSnapshot()`, add inputs with `add(input)`, and await `whenSettled(id)` or `waitForIdle()`.
+
+`remove(id)`, `cancel(id)`, and `clear()` invalidate outstanding results. See [getting started](/docs/guides/getting-started) for lifecycle and duplicate handling.
+
+## Limits
+
+| Option                   | Default         |
+| ------------------------ | --------------- |
+| `maxFiles`               | 5               |
+| `maxFileSize`            | 2,000,000 bytes |
+| `maxPreviewCharacters`   | 50,000          |
+| `maxPreviewNodes`        | 5,000           |
+| `maxPreviewDepth`        | 64              |
+| `maxImagePixels`         | 40,000,000      |
+| `maxExtractedCharacters` | 1,000,000       |
+| `maxDocumentPages`       | 200             |
+| `maxArchiveBytes`        | 20,000,000      |
+
+All limits must be positive safe integers. Preview truncation preserves source; extraction limits can reject an attachment. See [supported formats](/docs/guides/formats) for details.
+
+## Portable saved messages
+
+Core exports `createMessage`, `createMessageFromDocuments`, `isTexionMessage`, `isAttachmentReference`, `serializeMessage`, and `deserializeMessage`. The version 1 `TexionMessage` stores a `TexionContent` and serializable `TexionAttachmentReference[]`. Original file storage is supplied by your application.
+
+React exports `TexionMessageViewer` with an optional `resolveAttachment(attachment, signal)` callback, plus `defaultContent` and `initialAttachments` initial values on `useTexion` / `TexionInput`. See [Saved messages](/docs/guides/saved-messages) for the complete save, restore, render, and edit workflow.
+
+## Independent attachment behavior
+
+`useTexionAttachments(options)` exposes the attachment lifecycle without a composer UI: `documents`, `isDragging`, `inputError`, `addDocument`, `removeDocument`, `cancelDocument`, `clear`, `whenSettled`, `waitForIdle`, `openPicker`, `getRootProps`, `getInputProps`, `getTextareaProps`, and `handlePaste`. Its options are the shared attachment options, including `initialAttachments`.
+
+## Custom source formats
+
+`ContentFormat` includes built-in format IDs and custom adapter IDs. `RendererRegistry` maps format IDs to components accepting `PreviewRendererProps`. Pass `renderers` to the input or viewer and register matching `adapters` through their options. Custom source formats preserve native text; rich editing remains Markdown-specific. See [Custom adapters](/docs/guides/custom-adapters).
+
+## OCR
+
+`createPdfAdapter({ ocr, renderer?, canvasImport? })` opts PDF extraction into OCR. Core exports `OcrEngine`, `OcrSession`, `OcrOptions`, `DocumentPage`, `DocumentProgress`, `OcrSummary`, `classifyPdfPage`, `recognizePdfPages`, and `createOcrScheduler`. React exports `useOcrApproval` and displays lifecycle progress in attachment cards. Optional `@texion/ocr-tesseract` and `@texion/ocr-http` packages provide local worker and host-transport engines. See [Scanned PDFs and OCR](/docs/guides/ocr) for the complete contract and execution limits.

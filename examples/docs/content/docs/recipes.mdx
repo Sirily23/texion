@@ -1,0 +1,93 @@
+---
+title: Recipes
+description: Practical starting points for a chat, form, or custom input.
+---
+
+## Chat composer
+
+```tsx
+import { TexionInput } from '@texion/react';
+import '@texion/react/styles.css';
+
+<TexionInput
+  preview
+  previewImages
+  submitLabel="Send message"
+  onSubmit={async ({ content, attachments }) => {
+    // Send content and files through your application's API.
+    // Upload attachment.file ?? attachment.blob separately when needed.
+    await saveMessage(content, attachments);
+  }}
+/>;
+```
+
+Enter submits and Shift + Enter adds a newline. A successful submission does not clear the draft automatically. Use `useTexion` when you need explicit clearing or custom controls.
+
+## Form field
+
+```tsx
+<TexionInput
+  label="Description"
+  format="markdown"
+  submitOnEnter={false}
+  preview
+  attachments={false}
+  onSubmit={({ content }) => saveDescription(content)}
+/>
+```
+
+Preview controls appear above the editor by default. Set `previewPosition="below"` for an initial layout below the editor.
+
+## Build your own interface
+
+```tsx
+import { AttachmentList, useTexion } from '@texion/react';
+
+export function CustomComposer() {
+  const texion = useTexion({
+    submitOnEnter: false,
+    onSubmit: async (submission) => {
+      await saveMessage(submission);
+    },
+  });
+
+  return (
+    <div {...texion.getRootProps()}>
+      <AttachmentList
+        documents={texion.documents}
+        onRemove={texion.removeDocument}
+      />
+      <label htmlFor="draft">Message</label>
+      <textarea {...texion.getTextareaProps({ id: 'draft' })} />
+      <input {...texion.getInputProps({ hidden: true })} />
+      <button type="button" onClick={texion.openPicker}>
+        Attach files
+      </button>
+      <button
+        type="button"
+        disabled={texion.isSubmitting}
+        onClick={() => void texion.submit()}
+      >
+        Send
+      </button>
+      {texion.submitError && <p role="alert">{texion.submitError}</p>}
+    </div>
+  );
+}
+```
+
+`saveMessage` and `saveDescription` in these examples stand for your application's persistence or API functions.
+
+## Extract a PDF or DOCX
+
+```ts
+import { processDocument } from '@texion/core';
+
+const document = await processDocument(file);
+if (document.status === 'ready') {
+  const textForYourApplication = document.raw;
+  const originalFile = document.file ?? document.blob;
+}
+```
+
+Check warnings before deciding how to use extracted text. A scanned PDF may be accepted but contain no extractable text, with a `no-text` warning. Enable [opt-in OCR](/docs/guides/ocr) when scanned pages need recognition.

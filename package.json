@@ -2,14 +2,18 @@
   "name": "texion-workspace",
   "private": true,
   "scripts": {
-    "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r --filter '!@texion/docs' build",
+    "typecheck": "pnpm -r --filter '!@texion/docs' typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "vite --host 127.0.0.1",
     "test:browser": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "docs:dev": "pnpm --filter @texion/docs dev",
+    "docs:build": "pnpm --filter @texion/core build && pnpm --filter @texion/react build && pnpm --filter @texion/ocr-tesseract build && pnpm --filter @texion/docs build",
+    "docs:test": "playwright test --config playwright.docs.config.ts",
+    "docs:typecheck": "pnpm --filter @texion/docs typecheck",
     "benchmark:ocr": "node scripts/benchmark-ocr.mjs"
   },
   "devDependencies": {

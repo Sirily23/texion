@@ -1,0 +1,654 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+@import '../../../packages/react/src/styles/texion.css';
+@source '../node_modules/fumadocs-ui/dist';
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-500: #003d5b;
+  --color-brand-600: #00304a;
+}
+
+/* Shared brand palette with white and black surfaces. */
+:root {
+  color-scheme: light;
+  --color-fd-background: #fff;
+  --color-fd-foreground: #111113;
+  --color-fd-card: #f8fafc;
+  --color-fd-card-foreground: #111113;
+  --color-fd-muted: #f0f5f9;
+  --color-fd-muted-foreground: #414149;
+  --color-fd-secondary: #f0f5f9;
+  --color-fd-secondary-foreground: #111113;
+  --color-fd-primary: #2a7bb4;
+  --color-fd-primary-foreground: #fff;
+  --color-fd-border: #d5e1e9;
+  --color-fd-popover: #fff;
+  --color-fd-popover-foreground: #111113;
+  --color-fd-accent: #eff6ff;
+  --color-fd-accent-foreground: #003d5b;
+  --site-accent: #2a7bb4;
+  --site-accent-hover: #3385bf;
+  --site-accent-soft: #eff6ff;
+  --site-muted: #414149;
+  --site-panel: #f8fafc;
+  --site-border: #d5e1e9;
+  --site-control-background: #eff6ff;
+  --site-control-hover: #bfdbfe;
+  --site-outline: #3385bf;
+  --site-code-keyword: #003d5b;
+  --texion-background: #fff;
+  --texion-foreground: #111113;
+  --texion-border: #d5e1e9;
+  --texion-accent: #3385bf;
+}
+.dark {
+  color-scheme: dark;
+  --color-fd-background: #000;
+  --color-fd-foreground: #e8f0f8;
+  --color-fd-card: #05080b;
+  --color-fd-card-foreground: #e8f0f8;
+  --color-fd-muted: #080e13;
+  --color-fd-muted-foreground: #b1bfcc;
+  --color-fd-secondary: #080e13;
+  --color-fd-secondary-foreground: #e8f0f8;
+  --color-fd-primary: #8ec5e8;
+  --color-fd-primary-foreground: #001722;
+  --color-fd-border: #183447;
+  --color-fd-popover: #05080b;
+  --color-fd-popover-foreground: #e8f0f8;
+  --color-fd-accent: var(--color-brand-500);
+  --color-fd-accent-foreground: #eff6ff;
+  --site-accent: #8ec5e8;
+  --site-accent-hover: #b9e1fa;
+  --site-accent-soft: #001722;
+  --site-code-keyword: #8ec5e8;
+  --site-muted: #b1bfcc;
+  --site-panel: #080e13;
+  --site-border: #29485c;
+  --site-control-background: #001e2d;
+  --site-control-hover: #00304a;
+  --site-outline: #8ec5e8;
+  --texion-background: #000;
+  --texion-foreground: #e8f0f8;
+  --texion-border: #29485c;
+  --texion-accent: #8ec5e8;
+  /* Light-theme token fallbacks are too dark on black editor surfaces. */
+  --texion-highlight-keyword: #93c5fd;
+  --texion-highlight-comment: #a8b8c8;
+  --texion-highlight-property: #d8b4fe;
+  --texion-highlight-string: #6ee7b7;
+  --texion-highlight-number: #fcd34d;
+  --texion-highlight-boolean: #93c5fd;
+  --texion-highlight-null: #f9a8d4;
+  --texion-highlight-punctuation: #bac8d5;
+  --texion-highlight-heading: #93c5fd;
+  --texion-highlight-bold: #d8b4fe;
+  --texion-highlight-italic: #f9a8d4;
+  --texion-highlight-code: #6ee7b7;
+  --texion-highlight-link: #8ec5e8;
+  --texion-highlight-strikethrough: #a8b8c8;
+  --texion-highlight-marker: #fcd34d;
+  --texion-highlight-quote: #a8b8c8;
+  --texion-highlight-frontmatter: #a8b8c8;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--color-fd-background);
+  color: var(--color-fd-foreground);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a,
+button,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a,
+textarea,
+select,
+input {
+  outline-offset: 4px;
+}
+button {
+  cursor: pointer;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 23px;
+  font-weight: 720;
+  letter-spacing: -1px;
+}
+.brand-mark {
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: url('/texion-mark.svg') center / contain no-repeat;
+  mask: url('/texion-mark.svg') center / contain no-repeat;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  background: var(--site-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--site-accent) 10%, transparent);
+  flex-shrink: 0;
+}
+.install-command {
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  max-width: 405px;
+  background: var(--site-panel);
+  overflow: hidden;
+}
+.install-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 13px;
+  height: 33px;
+  border-bottom: 1px solid var(--site-border);
+  color: var(--site-muted);
+}
+.install-top > div {
+  display: flex;
+  align-self: stretch;
+}
+.install-top button {
+  padding: 0 10px;
+  font-size: 11px;
+  border-bottom: 1px solid transparent;
+}
+.install-top button[aria-pressed='true'] {
+  color: var(--site-accent);
+  border-bottom-color: var(--site-accent);
+}
+.install-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 13px;
+}
+.install-line pre {
+  margin: 0;
+  font-size: 12px;
+  white-space: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+}
+.install-line button {
+  color: var(--site-muted);
+  flex-shrink: 0;
+}
+.section-kicker {
+  color: var(--site-accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+}
+.playground-page {
+  width: min(1160px, calc(100% - 64px));
+  margin: 65px auto;
+}
+.playground-page > h1 {
+  font-size: clamp(30px, 4vw, 45px);
+  letter-spacing: -1.7px;
+  font-weight: 550;
+  margin: 12px 0;
+}
+.page-intro {
+  font-size: 15px;
+  color: var(--site-muted);
+}
+.playground {
+  margin-top: 35px;
+}
+.playground-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+.playground-controls > div {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 3px;
+  background: var(--site-panel);
+}
+.playground-controls button {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--site-accent);
+}
+.playground-controls button[aria-pressed='true'] {
+  background: var(--color-brand-500);
+  color: #eff6ff;
+}
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.playground-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  border: 1px solid var(--site-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.playground-composer {
+  min-width: 0;
+  background: var(--site-panel);
+}
+.playground-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--site-border);
+  font-size: 12px;
+  font-weight: 550;
+}
+.playground-panel-heading > span:last-child {
+  margin-left: auto;
+  color: var(--site-muted);
+  font:
+    10px var(--font-geist-mono),
+    ui-monospace,
+    monospace;
+}
+.playground .texion-input {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 23px;
+}
+.playground .texion-input > label {
+  color: var(--site-muted);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.playground .texion-input label select {
+  border: 1px solid var(--site-border);
+  border-radius: 6px;
+  padding: 5px;
+  background: var(--color-fd-background);
+  margin-left: auto;
+  color: var(--color-fd-foreground);
+}
+.playground .texion-input label[for] {
+  color: var(--color-fd-foreground);
+  font-weight: 500;
+}
+.playground .texion-input textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: none;
+  font:
+    13px/1.9 var(--font-geist-mono),
+    ui-monospace,
+    monospace;
+  border: 1px solid var(--site-border);
+  background: var(--color-fd-background);
+  border-radius: 8px;
+  padding: 15px;
+}
+.playground .texion-input > button {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  align-self: flex-start;
+  border: 0;
+  outline: 1px solid var(--site-outline);
+  outline-offset: -1px;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--site-accent);
+  background: var(--site-control-background);
+}
+.playground .texion-input > button:last-child {
+  align-self: flex-end;
+  color: #eff6ff;
+  background: var(--color-brand-500);
+  border-color: var(--site-outline);
+  font-weight: 500;
+}
+.playground .texion-input button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+.playground .texion-input-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.playground .texion-input-previews:empty {
+  display: none;
+}
+.playground .texion-input-previews > button {
+  font-size: 11px;
+  align-self: flex-start;
+  color: var(--site-accent);
+}
+.playground .texion-input-previews > label {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.playground .texion-attachments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.playground .texion-attachments li {
+  font-size: 11px;
+  border: 1px solid var(--site-border);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.playground .texion-attachments li > span:first-child {
+  margin-right: auto;
+  overflow-wrap: anywhere;
+}
+.playground .texion-attachments button {
+  color: var(--site-accent);
+  font-size: 10px;
+  padding: 3px;
+}
+.playground .texion-viewer {
+  overflow: auto;
+  font-size: 13px;
+  border-color: var(--site-border);
+  padding: 12px;
+  border-radius: 6px;
+}
+.playground .texion-viewer pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.playground .texion-viewer h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.playground-help {
+  padding: 0 23px 23px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--site-muted);
+}
+.submission-panel {
+  min-width: 0;
+  border-left: 1px solid var(--site-border);
+}
+.submission-empty {
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 35px;
+  text-align: center;
+}
+.submission-empty > span {
+  color: var(--site-accent);
+  font:
+    35px var(--font-geist-mono),
+    ui-monospace,
+    monospace;
+  margin-bottom: 22px;
+}
+.submission-empty h2 {
+  font-size: 16px;
+  font-weight: 550;
+}
+.submission-empty p {
+  max-width: 280px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--site-muted);
+  margin-top: 12px;
+}
+.submission-empty a {
+  color: var(--site-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  margin-top: 22px;
+}
+.submitted-content {
+  padding: 20px;
+}
+.submission-json {
+  margin-top: 20px;
+  font-size: 12px;
+}
+.submission-json summary,
+.submitted-files summary {
+  cursor: pointer;
+  color: var(--site-accent);
+}
+.submission-json pre,
+.submitted-files pre {
+  padding: 12px;
+  background: var(--site-panel);
+  border: 1px solid var(--site-border);
+  border-radius: 7px;
+  overflow: auto;
+  max-height: 350px;
+  font:
+    11px/1.8 var(--font-geist-mono),
+    ui-monospace,
+    monospace;
+  margin-top: 10px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.submitted-files {
+  margin: 20px 0;
+}
+.submitted-files h3 {
+  font-size: 12px;
+  font-weight: 600;
+}
+.submitted-files > div {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--site-border);
+  font-size: 12px;
+}
+.submitted-files > div > span {
+  display: block;
+  color: var(--site-muted);
+  font-size: 10px;
+  margin: 5px 0;
+}
+.playground-footnote {
+  color: var(--site-muted);
+  font-size: 11px;
+  line-height: 1.9;
+  margin-top: 17px;
+}
+.playground-footnote a {
+  color: var(--site-accent);
+}
+.texion-rich-content {
+  min-height: 170px;
+  border-color: var(--site-border);
+  background: var(--color-fd-background);
+}
+@media (max-width: 760px) {
+  .playground-page {
+    width: calc(100% - 36px);
+    margin-top: 40px;
+  }
+  .playground-grid {
+    grid-template-columns: 1fr;
+  }
+  .submission-panel {
+    border-left: 0;
+    border-top: 1px solid var(--site-border);
+  }
+  .playground-controls {
+    align-items: flex-start;
+  }
+  .playground-controls button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+code,
+pre,
+kbd,
+samp,
+.texion-rich-inline-code,
+.texion-rich-code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Shared interaction states for the docs and live components. */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--site-outline);
+  outline-offset: 3px;
+}
+.playground .texion-input > button:hover {
+  background: var(--site-control-hover);
+  font-weight: 700;
+}
+.playground .texion-input > button:last-child:hover {
+  background: var(--color-brand-600);
+}
+.playground-controls button:hover,
+.install-top button:hover {
+  color: #eff6ff;
+  background: var(--color-brand-600);
+  font-weight: 700;
+}
+.install-top button,
+.install-line button {
+  color: var(--site-accent);
+}
+.install-top button[aria-pressed='true'] {
+  background: var(--color-brand-500);
+  color: #eff6ff;
+}
+.playground .texion-input-previews > button:hover,
+.playground .texion-attachments button:hover,
+.submission-empty a:hover,
+.playground-footnote a:hover {
+  color: var(--site-accent-hover);
+  font-weight: 700;
+}
+#nd-sidebar a[data-active='true'] {
+  background: var(--color-brand-500);
+  color: #eff6ff;
+}
+.playground-controls > button.reset-button {
+  background: var(--site-control-background);
+  outline: 1px solid var(--site-outline);
+  outline-offset: -1px;
+}
+.playground-controls > button.reset-button:hover {
+  color: var(--site-accent);
+  background: var(--site-control-hover);
+}
+
+.saved-message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.saved-message-actions button,
+.playground-composer form > button,
+.playground-composer form li button,
+.submission-panel .texion-saved-attachment > button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--site-outline);
+  border-radius: 0.375rem;
+  background: var(--site-control-background);
+  color: var(--site-accent);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.saved-message-actions button:hover,
+.playground-composer form > button:hover {
+  font-weight: 700;
+}
+.saved-message-actions button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.playground-composer form > label {
+  display: block;
+  margin: 1rem 0 0.5rem;
+}
+.playground-composer form > textarea {
+  display: block;
+  width: 100%;
+  min-height: 12rem;
+  resize: none;
+  padding: 1rem;
+  border: 1px solid var(--color-fd-border);
+  border-radius: 0.5rem;
+  background: var(--color-fd-background);
+  color: var(--color-fd-foreground);
+}
+.playground-composer form > button {
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+.playground-composer form > ul {
+  overflow-wrap: anywhere;
+}

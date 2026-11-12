@@ -1,0 +1,55 @@
+---
+title: Meet Texion
+description: Composable content inputs, attachments, and previews for React applications.
+---
+
+Texion connects the work around an input: writing, attaching files, processing documents, showing previews, and submitting consistent data to your application.
+
+Use a ready-made component, build your own interface with hooks, or process documents without React.
+
+Texion is currently available from the repository; the npm packages have not been published yet. See [repository setup](/docs/development) to run it locally.
+
+## Start with a composer
+
+```tsx
+import { TexionInput } from '@texion/react';
+import '@texion/react/styles.css';
+
+export function Composer() {
+  return (
+    <TexionInput
+      preview
+      attachments
+      onSubmit={({ content, attachments }) => {
+        // Store content or send it to your application's backend.
+        console.log(content, attachments);
+      }}
+    />
+  );
+}
+```
+
+[Try the live playground](/playground) to experiment with chat, form, and rich Markdown inputs.
+
+## Choose your starting point
+
+| What you need                            | Start here                                      |
+| ---------------------------------------- | ----------------------------------------------- |
+| A composer with attachments              | [Getting started](/docs/guides/getting-started) |
+| An existing textarea with highlighting   | [Source editing](/docs/guides/source-editing)   |
+| Editable rich Markdown                   | [Rich editing](/docs/guides/rich-editing)       |
+| File extraction and preview capabilities | [Supported formats](/docs/guides/formats)       |
+| Your own input UI                        | [Recipes](/docs/recipes)                        |
+| A custom document format                 | [Custom adapters](/docs/guides/custom-adapters) |
+
+## Two packages, one lifecycle
+
+**`@texion/core`** handles format detection, validation, processing state, extraction, immutable document snapshots, and preview descriptors.
+
+**`@texion/react`** adds input components, hooks, attachment lists, and document viewers using that same lifecycle.
+
+## Content stays in your application
+
+Texion does not choose an LLM, upload files to a service, or store messages. Your submission handler receives the content and attachments so you can connect your own backend.
+
+PDF and DOCX extraction produces text previews. Scanned PDFs can use [opt-in OCR](/docs/guides/ocr). See [security and limits](/docs/guides/security) before deploying a file-processing application.

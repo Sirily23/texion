@@ -318,3 +318,39 @@ test('inserts structured data into an existing rich draft as a literal code bloc
   });
   await expect(submitted.locator('pre code')).toHaveText(source);
 });
+
+test('uploads TXT, PDF and DOCX and submits extracted text in the browser', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const root = page.locator('.texion-input').filter({
+    has: page.getByRole('textbox', { name: 'Message', exact: true }),
+  });
+  const picker = root.getByLabel('Choose files');
+  await picker.setInputFiles({
+    name: 'note.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('# Literal text\n<script>literal</script>'),
+  });
+  await root.getByRole('button', { name: 'Preview note.txt' }).click();
+  const textPreview = root.getByRole('region', { name: 'Preview of note.txt' });
+  await expect(textPreview).toContainText('# Literal text');
+  await expect(textPreview.locator('script, h1')).toHaveCount(0);
+  await picker.setInputFiles([
+    'tests/fixtures/document.pdf',
+    'tests/fixtures/document.docx',
+  ]);
+  for (const [name, content] of [
+    ['document.pdf', 'Hello from PDF'],
+    ['document.docx', 'Hello from DOCX'],
+  ]) {
+    await root.getByRole('button', { name: `Preview ${name}` }).click();
+    await expect(
+      root.getByRole('region', { name: `Preview of ${name}` }),
+    ).toContainText(content!);
+  }
+  await root.getByRole('button', { name: 'Submit', exact: true }).click();
+  const submitted = page.getByLabel('Submitted content');
+  await expect(submitted).toContainText('Hello from PDF');
+  await expect(submitted).toContainText('Hello from DOCX');
+});

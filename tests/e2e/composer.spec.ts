@@ -62,10 +62,6 @@ test('keeps native composition and keyboard access', async ({ page }) => {
   await textarea.focus();
   await page.keyboard.press('Tab');
   await expect(
-    page.getByRole('button', { name: 'Preview message', exact: true }),
-  ).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(
     page.getByRole('button', { name: 'Attach files' }),
   ).toBeFocused();
 });

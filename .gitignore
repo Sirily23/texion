@@ -51,3 +51,8 @@ docs/ocr-implementation-plan.md
 docs/texion-assessment.md
 examples/docs/AGENTS.md
 examples/docs/next-env.d.ts
+
+# Local Firebase project binding, cache and debug logs
+.firebaserc
+.firebase/
+firebase-debug.log*

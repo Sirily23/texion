@@ -26,6 +26,10 @@ Scanned PDFs can use optional OCR. Image attachments do not automatically become
 
 ## Add a composer
 
+```sh
+npm install @texion/react
+```
+
 ```tsx
 import { TexionInput } from '@texion/react';
 import '@texion/react/styles.css';
@@ -45,7 +49,7 @@ export default function App() {
 
 Use `mode="rich" live` for editable Markdown or `highlight` for source editing. Previews appear above the input by default, with an option to move them below.
 
-The packages are experimental and not yet published to npm. You can run the examples from this repository while preparing your integration.
+Version 0.1.0 is available on npm. Texion is experimental; feedback from real integrations is welcome.
 
 ## Use your own interface
 

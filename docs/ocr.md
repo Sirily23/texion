@@ -1,6 +1,6 @@
 # OCR for scanned PDFs
 
-OCR is an opt-in stage inside the PDF adapter. The default `pdfAdapter` still extracts native text without loading an OCR engine, worker, or language model. These workspace packages are experimental and unpublished; run `pnpm install` and `pnpm build` in this repository before using their built entry points.
+OCR is an opt-in stage inside the PDF adapter. The default `pdfAdapter` still extracts native text without loading an OCR engine, worker, or language model. The optional OCR packages are available on npm as experimental 0.1.0 releases.
 
 ## What works
 
@@ -11,6 +11,10 @@ OCR is an opt-in stage inside the PDF adapter. The default `pdfAdapter` still ex
 - Progress, approval, cancellation, deadlines, partial failures, and guarded submit use the existing document lifecycle.
 
 ## Enable local OCR
+
+```sh
+npm install @texion/core @texion/ocr-tesseract
+```
 
 Use the optional `@texion/ocr-tesseract/browser` entry and replace the PDF adapter in the registry. Do not append a second adapter with the same `pdf` ID.
 
@@ -90,6 +94,10 @@ const document = await processDocument(file, { adapters: [pdf] });
 The host installs the canvas implementation; core does not import it automatically. This repository tests `@napi-rs/canvas` 0.1.100 with pinned unpdf 1.3.2. Node recognition uses an owned worker thread and local core files. It has no implicit language download because `langPath` is required.
 
 ## Server or hosted OCR
+
+```sh
+npm install @texion/core @texion/ocr-http
+```
 
 ```ts
 import { createHttpOcrEngine } from '@texion/ocr-http';

@@ -1,6 +1,10 @@
 # Getting started
 
-Texion has two packages: `@texion/core` and `@texion/react`. Markdown, plain text (TXT), JSON, CSV, PDF, DOCX and local PNG/JPEG/GIF/WebP images have built-in adapters.
+Texion's main packages are `@texion/core` and `@texion/react`. Markdown, plain text (TXT), JSON, CSV, PDF, DOCX and local PNG/JPEG/GIF/WebP images have built-in adapters. Optional OCR engines are available separately.
+
+```sh
+npm install @texion/react
+```
 
 ```tsx
 import { TexionInput } from '@texion/react';

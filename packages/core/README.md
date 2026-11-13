@@ -24,4 +24,4 @@ Parsing runs locally. Your app owns uploads, storage, and anything sent to an AI
 
 Experimental release. Works in the browser and Node. Node 20 or newer is required.
 
-[Documentation](https://texion.pages.dev/docs) · [Source](https://github.com/Sirily23/texion/tree/main/packages/core) · [MIT license](LICENSE)
+[Documentation](https://texion.web.app/docs) · [Source](https://github.com/Sirily23/texion/tree/main/packages/core) · [MIT license](LICENSE)

@@ -1,6 +1,6 @@
 {
   "name": "@texion/ocr-http",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "sideEffects": false,
   "files": [
@@ -31,7 +31,7 @@
     "url": "git+https://github.com/Sirily23/texion.git",
     "directory": "packages/ocr-http"
   },
-  "homepage": "https://texion.pages.dev",
+  "homepage": "https://texion.web.app",
   "bugs": {
     "url": "https://github.com/Sirily23/texion/issues"
   },

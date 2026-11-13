@@ -1,6 +1,6 @@
 # OCR for scanned PDFs
 
-OCR is an opt-in stage inside the PDF adapter. The default `pdfAdapter` still extracts native text without loading an OCR engine, worker, or language model. The optional OCR packages are available on npm as experimental 0.1.0 releases.
+OCR is an opt-in stage inside the PDF adapter. The default `pdfAdapter` still extracts native text without loading an OCR engine, worker, or language model. The optional OCR packages are published on npm and are experimental.
 
 ## What works
 

@@ -32,4 +32,4 @@ Built-in parsing runs locally. Your submit handler decides what gets stored or s
 
 Experimental release. React 18 or 19 is required.
 
-[Try the demo](https://texion.pages.dev) · [Documentation](https://texion.pages.dev/docs) · [Source](https://github.com/Sirily23/texion/tree/main/packages/react) · [MIT license](LICENSE)
+[Try the demo](https://texion.web.app) · [Documentation](https://texion.web.app/docs) · [Source](https://github.com/Sirily23/texion/tree/main/packages/react) · [MIT license](LICENSE)

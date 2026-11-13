@@ -44,4 +44,4 @@ Recognition uses pinned Tesseract.js 6.0.1. Native PDF decoding and page renderi
 
 Experimental release.
 
-[OCR guide](https://texion.pages.dev/docs/guides/ocr) · [Source](https://github.com/Sirily23/texion/tree/main/packages/ocr-tesseract) · [MIT license](LICENSE)
+[OCR guide](https://texion.web.app/docs/guides/ocr) · [Source](https://github.com/Sirily23/texion/tree/main/packages/ocr-tesseract) · [MIT license](LICENSE)

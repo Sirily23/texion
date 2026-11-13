@@ -1,13 +1,17 @@
 ---
-title: Meet Texion
-description: Composable content inputs, attachments, and previews for React applications.
+title: Texion
+description: Text, files, and previews for React applications.
 ---
 
 Texion connects the work around an input: writing, attaching files, processing documents, showing previews, and submitting consistent data to your application.
 
 Use a ready-made component, build your own interface with hooks, or process documents without React.
 
-Texion is currently available from the repository; the npm packages have not been published yet. See [repository setup](/docs/development) to run it locally.
+Texion is published on npm. Install the React package to get started:
+
+```sh
+npm install @texion/react
+```
 
 ## Start with a composer
 
@@ -42,11 +46,13 @@ export function Composer() {
 | Your own input UI                        | [Recipes](/docs/recipes)                        |
 | A custom document format                 | [Custom adapters](/docs/guides/custom-adapters) |
 
-## Two packages, one lifecycle
+## Core and React
 
 **`@texion/core`** handles format detection, validation, processing state, extraction, immutable document snapshots, and preview descriptors.
 
 **`@texion/react`** adds input components, hooks, attachment lists, and document viewers using that same lifecycle.
+
+Optional OCR engines are available as `@texion/ocr-tesseract` and `@texion/ocr-http`.
 
 ## Content stays in your application
 

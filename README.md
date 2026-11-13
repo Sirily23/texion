@@ -4,6 +4,8 @@
 
 Let people write, paste, and attach documents in the same place. Texion handles parsing, previews, and file states so you can focus on what your app does with the content.
 
+[Try the demo](https://texion.web.app) · [Read the docs](https://texion.web.app/docs/)
+
 ## What it handles
 
 - **Text and files together.** One composer for a message and its attachments.
@@ -49,7 +51,7 @@ export default function App() {
 
 Use `mode="rich" live` for editable Markdown or `highlight` for source editing. Previews appear above the input by default, with an option to move them below.
 
-Version 0.1.0 is available on npm. Texion is experimental; feedback from real integrations is welcome.
+Texion is available on npm. It is experimental; feedback from real integrations is welcome.
 
 ## Use your own interface
 

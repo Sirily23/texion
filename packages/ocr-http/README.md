@@ -43,4 +43,4 @@ The transport must honor the supplied abort signal. Aborting a browser request d
 
 Experimental release.
 
-[OCR guide](https://texion.pages.dev/docs/guides/ocr) · [Source](https://github.com/Sirily23/texion/tree/main/packages/ocr-http) · [MIT license](LICENSE)
+[OCR guide](https://texion.web.app/docs/guides/ocr) · [Source](https://github.com/Sirily23/texion/tree/main/packages/ocr-http) · [MIT license](LICENSE)

@@ -43,5 +43,25 @@
   "engines": {
     "node": ">=20"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "description": "Optional local Tesseract OCR workers for Texion PDF extraction.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sirily23/texion.git",
+    "directory": "packages/ocr-tesseract"
+  },
+  "homepage": "https://texion.pages.dev",
+  "bugs": {
+    "url": "https://github.com/Sirily23/texion/issues"
+  },
+  "keywords": [
+    "ocr",
+    "tesseract",
+    "pdf",
+    "browser",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

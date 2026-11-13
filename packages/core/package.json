@@ -36,5 +36,25 @@
   "devDependencies": {
     "@types/papaparse": "^5.5.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "description": "Document parsing, validation, cancellation, and previews for text and file inputs.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sirily23/texion.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://texion.pages.dev",
+  "bugs": {
+    "url": "https://github.com/Sirily23/texion/issues"
+  },
+  "keywords": [
+    "documents",
+    "parser",
+    "pdf",
+    "docx",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

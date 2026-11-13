@@ -2,61 +2,82 @@
 
 **One input for text and files, for React.**
 
-Type, paste, or drop documents. Get preserved source, extracted text where available, previews, and a submission that waits for attachments to be ready.
+Let people write, paste, and attach documents in the same place. Texion handles parsing, previews, and file states so you can focus on what your app does with the content.
 
-## What you get
+## What it handles
 
-- **A shared document lifecycle.** Typed content is processed on submission; attachments move through pending, processing, and ready/error states.
-- **One document shape** across Markdown, TXT, JSON, CSV, PDF, DOCX, and raster images. Image documents retain their original bytes and image metadata; they do not provide extracted text without OCR.
-- **Correct async behavior.** Cancellation, duplicate handling, and stale-result protection are built in.
-- **Guarded submit.** It waits for in-flight files and refuses stale or unready input.
-- **Safe-by-default previews.** Escaped content, a URL policy for links, and size, page, and character limits. These cover previews, not file safety in general.
-- **Portable saved messages.** Preserve source and host-owned attachment references; restore previews and reopen the original content and files for editing.
+- **Text and files together.** One composer for a message and its attachments.
+- **One document object across formats.** Read the status, extracted text, metadata, warnings, and errors through the same API.
+- **Cancellation and duplicate handling.** Remove a file while it is processing, and late results stay out of the draft.
+- **Submission that waits.** Files finish processing before your submit handler runs. Failed files and changed drafts stop the submission.
+- **Previews before sending.** Show formatted Markdown, structured data, extracted document text, and image thumbnails. Raw HTML and dangerous links are blocked by default.
+- **Messages you can reopen.** Save the source with references to files stored by your app, then restore them for viewing or editing.
 
-## Parsing and storage
+## Supported formats
 
-Built-in parsing runs locally. `@texion/core` is independent of React and can also be used in Node; the documentation app requires Node 22 or newer. PDF and DOCX extraction use unpdf and Mammoth, loaded on demand.
+| Format                   | What you get                                                  |
+| ------------------------ | ------------------------------------------------------------- |
+| Markdown and TXT         | Original source and a formatted or plain text preview         |
+| JSON and CSV             | Original source, validation warnings, and structured previews |
+| PDF and DOCX             | Extracted text, a preview, and the original file              |
+| PNG, JPEG, GIF, and WebP | Image previews, metadata, and the original file               |
 
-Custom adapters are trusted application code. They can integrate another parser, but Texion does **not** currently provide a `mode: 'local' | 'server' | 'hosted'` setting, endpoint client, upload service, or automatic fallback. A remote parser requires application-owned transport, authentication, cancellation, and error handling. See [custom adapters](docs/custom-adapters.md) for the existing contract.
+Scanned PDFs can use optional OCR. Image attachments do not automatically become extracted text. See [supported formats](docs/formats.md) and [OCR setup](docs/ocr.md) for details.
 
-Texion does not decide what happens to files or extracted text afterward. Your `onSubmit` handler does. If it sends extracted text to an LLM, that text leaves the device. Saved-message storage is also supplied by your app; the playground demonstrates browser-local persistence.
+## Add a composer
 
-## Use as much as you need
+```tsx
+import { TexionInput } from '@texion/react';
+import '@texion/react/styles.css';
 
-- `@texion/core`: decoding, validation, document state, cancellation, previews, and portable content/message contracts.
-- `@texion/react`: `useTexion`, `TexionInput`, `useDocument`, `AttachmentList`, `DocumentViewer`, `TexionViewer`, and `TexionMessageViewer`.
-- `useSourceInput` and `useTexionAttachments`: independent behavior for your own interface.
-- Custom adapters and renderer registries: extend source formats and previews without replacing the document lifecycle.
+export default function App() {
+  return (
+    <TexionInput
+      preview
+      onSubmit={({ content, attachments }) => {
+        // Store the message or send it to your app's next step.
+        console.log(content.source, attachments);
+      }}
+    />
+  );
+}
+```
 
-Use `<TexionInput mode="rich" live formats={['markdown']} />` for rich Markdown editing, or `<TexionInput highlight />` for native source editing. Markdown previews support fenced code languages, copying, folding, and bounded highlighting. JSON/CSV fences also show local validation warnings; SQL is highlighted without execution.
+Use `mode="rich" live` for editable Markdown or `highlight` for source editing. Previews appear above the input by default, with an option to move them below.
 
-## Status
+The packages are experimental and not yet published to npm. You can run the examples from this repository while preparing your integration.
 
-**Works today**
+## Use your own interface
 
-- Markdown, TXT, JSON, CSV, PDF, DOCX, and raster image attachments.
-- PDF/DOCX text extraction with original files retained.
-- Local parsing, optional Tesseract OCR, and a generic host-owned remote OCR transport adapter.
-- Source editing, rich Markdown editing, structured previews, portable saved messages, and reopening content and attachments.
-- A Fumadocs playground demonstrating save → reload → preview → edit, plus separate headless hooks.
+You can use the composer or take just the parts you need:
 
-**Limits today**
+- **`@texion/core`** processes documents and manages their state without React. It works in the browser or Node.
+- **`@texion/react`** provides the composer, hooks, attachment list, and viewers.
+- **`useTexion`** connects a custom interface to editing, attachments, and submission.
+- **`useSourceInput` and `useTexionAttachments`** let you use editing and file handling separately.
+- **Custom adapters and renderers** let you add a parser or change how content appears.
 
-- Default PDF output is native text only, with no promised table reconstruction or layout-aware reading order. Scanned PDFs can use the opt-in OCR adapter; see [OCR](docs/ocr.md).
-- OCR recognition runs in a terminable worker with page and total deadlines. Native PDF decoding and canvas rendering remain cooperative.
-- Custom parser and renderer code is trusted application code.
-- Experimental; not yet published to npm.
-- Extraction quality on a representative document corpus has not been established.
+See [getting started](docs/getting-started.md), [custom adapters](docs/custom-adapters.md), and [saved messages](docs/saved-messages.md).
 
-**Potential next work**
+## Where parsing happens
 
-1. Validate integration needs with developers building chat and document features, including where they parse files and why.
-2. Design explicit server/hosted parser integration while preserving the input and output contract.
-3. Isolate PDF parsing and rendering in workers/processes; OCR recognition already has cancellation and deadlines.
-4. Benchmark PDF extraction against underlying parsers before committing to layout-aware extraction, tables, or citation blocks.
-5. Validate optional OCR and upload integrations against demonstrated needs.
+Built-in parsing runs locally. PDF and Word extraction use unpdf and Mammoth, loaded only when needed.
 
-## Quick start
+Your app decides what gets stored or sent afterward. Texion does not upload attachments for you. If your submit handler sends extracted text to an AI service, that text leaves the device.
+
+You can connect another parser through a custom adapter. General remote parsing needs your own transport and authentication; there is no built-in switch between local, server, and hosted parsing. OCR has separate optional packages for local Tesseract recognition and an application-supplied remote transport.
+
+## Current limits
+
+PDF extraction does not reconstruct tables or guarantee the reading order of complex layouts. OCR is optional, and extraction quality has not been measured across a representative collection of documents.
+
+OCR recognition runs in a worker that can be terminated. PDF decoding and rendering do not yet have the same isolation.
+
+File size, page, character, and DOCX decompression limits help bound processing. Safe previews do not make an uploaded file safe to open elsewhere. Custom adapters and renderers are trusted code supplied by your app. Read [security and limits](docs/security.md) before choosing your configuration.
+
+## Run the examples
+
+Use Node 22 and pnpm 10.
 
 ```sh
 nvm use
@@ -65,9 +86,15 @@ pnpm build
 pnpm dev
 ```
 
-See [getting started](docs/getting-started.md), [saved messages](docs/saved-messages.md), [security](docs/security.md), and the [composer example](examples/chat-composer/main.tsx).
+To run the documentation site and playground:
 
-Use `pnpm typecheck`, `pnpm test`, and `pnpm format:check` to validate changes. The Fumadocs site lives in `examples/docs`: run `pnpm docs:dev` for development or `pnpm docs:build` for a static export. See [the docs application](examples/docs/README.md).
+```sh
+pnpm docs:dev
+```
+
+The playground lets you try formats, save a message locally, reload it, and reopen it for editing. It also includes an optional scanned-PDF example.
+
+For development checks, run `pnpm typecheck` and `pnpm test`. See [the docs application](examples/docs/README.md) for building and testing the site, or start with the [chat composer example](examples/chat-composer/main.tsx).
 
 ## License
 
